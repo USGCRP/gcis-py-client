@@ -1,6 +1,7 @@
 from gcis_client import GcisClient, AssociationException
 from webform_client import WebformClient
 from nca3_client import Nca3Client
+from survey_client import SurveyClient
 
 from os.path import expanduser, exists
 from os import makedirs, getenv
@@ -20,3 +21,5 @@ gcis_dev_auth = (getenv('GCIS_DEV_USER'), getenv('GCIS_DEV_KEY'))
 gcis_auth = (getenv('GCIS_USER'), getenv('GCIS_KEY'))
 
 webform_token = getenv('WEBFORM_TOKEN')
+
+survey_token = getenv('SURVEY_TOKEN')

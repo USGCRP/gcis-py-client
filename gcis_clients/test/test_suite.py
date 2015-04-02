@@ -175,4 +175,4 @@ def test_dataset_special_properties():
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "gcis_client.test.test_suite"
-    test_get_credentials_modes()
+    # test_get_credentials_modes()

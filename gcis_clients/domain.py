@@ -57,6 +57,9 @@ class Gcisbase(object):
 
 class GcisObject(Gcisbase):
     def __init__(self, data, **kwargs):
+        if type(data) is not dict:
+            raise TypeError('Expected dict, got {t}'.format(t=type(data)))
+
         #Special case for contributors
         contrib_list = data.pop('contributors', None)
         self.contributors = [Contributor(contrib) for contrib in contrib_list] if contrib_list else []
