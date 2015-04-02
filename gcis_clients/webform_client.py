@@ -9,6 +9,7 @@ from dateutil.parser import parse
 from copy import deepcopy
 
 from domain import Figure, Image, Dataset, Activity, Contributor, Person, Organization, Parent
+import webform_transforms as trans
 
 
 def sanitized(pattern):
@@ -82,7 +83,8 @@ class WebformClient:
         #TODO: refactor the service so this isn't necessary
         webform_nid = webform_json.keys()[0]
         figure_json = webform_json[webform_nid]['figure'][0]
-        f = Figure(figure_json)
+
+        f = Figure(figure_json, trans=trans.FIG_TRANSLATIONS)
 
         #Add contributor info
         if 'list_the_creator_of_the_figure' in figure_json:
@@ -91,12 +93,12 @@ class WebformClient:
         #Add provenance information (wasDerivedFrom parent)
         if 'what_type_of_source_provided_this_figure' in figure_json and figure_json[
             'what_type_of_source_provided_this_figure'] == 'published_source':
-            f.add_parent(Parent(deepcopy(f.original)))
+            f.add_parent(Parent(deepcopy(f.original), trans=trans.PARENT_TRANSLATIONS))
 
         if 'images' in webform_json[webform_nid]:
             for img_idx, image in enumerate(webform_json[webform_nid]['images']):
                 image_obj = Image(image, local_path=self.get_local_image_path(image),
-                                  remote_path=self.get_remote_image_path(image))
+                                  remote_path=self.get_remote_image_path(image), trans=trans.IMG_TRANSLATIONS)
 
                 #Add contributor info
                 if 'list_the_creator_of_the_image' in image:
@@ -105,7 +107,7 @@ class WebformClient:
                 #TODO: this just keeps getting worse
                 if 'datasources' in webform_json[webform_nid]['images'][img_idx]:
                     for dataset_json in webform_json[webform_nid]['images'][img_idx]['datasources']:
-                        dataset = Dataset(dataset_json)
+                        dataset = Dataset(dataset_json, trans=trans.DATASET_TRANSLATIONS)
 
                         #Commence the hacks
                         try:
@@ -131,7 +133,7 @@ class WebformClient:
 
                         #Add synthetic identifier
                         activity_json['identifier'] = '-'.join((image_obj.identifier.split('-')[0], dataset.identifier, 'process'))
-                        dataset.activity = Activity(activity_json)
+                        dataset.activity = Activity(activity_json, trans=trans.ACT_TRANSLATIONS)
 
                         #TODO: Extract DOIs from citation
                         image_obj.datasets.append(dataset)

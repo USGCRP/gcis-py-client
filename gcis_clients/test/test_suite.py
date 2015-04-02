@@ -14,6 +14,7 @@ from gcis_clients import GcisClient
 import __builtin__
 from os import getenv
 import gcis_clients
+import gcis_clients.webform_transforms as trans
 
 
 def test_gcis_client_version():
@@ -124,7 +125,7 @@ def test_domain_as_json():
 
 
 def test_chapter_parsing():
-    webform_fig = Figure(json.loads(webform_json_precip))
+    webform_fig = Figure(json.loads(webform_json_precip), trans=trans.FIG_TRANSLATIONS)
     gcis_fig = Figure(json.loads(test_figure_json))
 
     assert isinstance(webform_fig.ordinal, int)

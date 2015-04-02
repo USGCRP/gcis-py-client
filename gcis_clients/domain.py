@@ -9,7 +9,7 @@ from dateutil.parser import parse
 
 
 class Gcisbase(object):
-    def __init__(self, data, fields=[], trans={}):
+    def __init__(self, data, fields=(), trans=()):
         #Setup class variables
         self.gcis_fields = fields
         self.translations = trans
@@ -77,21 +77,14 @@ class GcisObject(Gcisbase):
 
 
 class Figure(GcisObject):
-    def __init__(self, data):
+    def __init__(self, data, trans=()):
         self.gcis_fields = [
-            'usage_limits', 'kindred_figures', 'time_end', 'keywords', 'lat_min', 'create_dt', 'lat_max', 'time_start',
+            'usage_limits', 'kindred_figures', 'time_start', 'time_end', 'keywords', 'lat_min', 'create_dt', 'lat_max',
             'title', 'ordinal', 'lon_min', 'report_identifier', 'chapter', 'submission_dt', 'uri', 'lon_max',
             'caption', 'source_citation', 'attributes', 'identifier', 'chapter_identifier', 'images'
         ]
 
-        self.translations = {
-            'what_is_the_figure_id': 'identifier',
-            'what_is_the_name_of_the_figure_as_listed_in_the_report': 'title',
-            'when_was_this_figure_created': 'create_dt',
-            'what_is_the_chapter_and_figure_number': 'figure_num'
-        }
-
-        super(Figure, self).__init__(data, fields=self.gcis_fields, trans=self.translations)
+        super(Figure, self).__init__(data, fields=self.gcis_fields, trans=trans)
 
         #Special case for chapter
         chap_tree = data.pop('chapter', None)
@@ -102,7 +95,7 @@ class Figure(GcisObject):
         self.images = [Image(image) for image in image_list] if image_list else []
 
         #Hack
-        self.identifier = self.identifier.replace('/figure/', '') if self.identifier != '' else '***ID MISSING***'
+        self.identifier = self.identifier.replace('/figure/', '') if self.identifier not in ('', None) else '***ID MISSING***'
 
     @property
     def figure_num(self):
@@ -165,28 +158,15 @@ class Chapter(GcisObject):
 
 
 class Image(GcisObject):
-    def __init__(self, data, local_path=None, remote_path=None):
+    def __init__(self, data, local_path=None, remote_path=None, trans=()):
         self.gcis_fields = ['attributes', 'create_dt', 'description', 'identifier', 'lat_max', 'lat_min', 'lon_max',
                             'uri', 'lon_min', 'position', 'submission_dt', 'time_end', 'time_start', 'title', 'href',
                             'usage_limits']
 
-        self.translations = {
-            'list_any_keywords_for_the_image': 'attributes',
-            'when_was_this_image_created': 'create_dt',
-            'what_is_the_image_id': 'identifier',
-            'maximum_latitude': 'lat_max',
-            'minimum_latitude': 'lat_min',
-            'maximum_longitude': 'lon_max',
-            'minimum_longitude': 'lon_min',
-            'start_time': 'time_start',
-            'end_time': 'time_end',
-            'what_is_the_name_of_the_image_listed_in_the_report': 'title'
-        }
-
         #Private attributes for handling date parsing
         self._create_dt = None
 
-        super(Image, self).__init__(data, fields=self.gcis_fields, trans=self.translations)
+        super(Image, self).__init__(data, fields=self.gcis_fields, trans=trans)
 
         #Hack
         self.identifier = self.identifier.replace('/image/', '')
@@ -213,29 +193,13 @@ class Image(GcisObject):
 
 
 class Dataset(GcisObject):
-    def __init__(self, data):
+    def __init__(self, data, trans=()):
         self.gcis_fields = ['contributors', 'vertical_extent', 'native_id', 'href', 'references', 'cite_metadata',
                         'scale', 'publication_year', 'temporal_extent', 'version', 'parents', 'scope', 'type',
                         'processing_level', 'files', 'data_qualifier', 'access_dt', 'description', 'spatial_ref_sys',
                         'spatial_res', 'spatial_extent', 'doi', 'name', 'url', 'uri', 'identifier', 'release_dt',
                         'attributes']
 
-        self.translations = {
-            'data_set_access_date': 'access_dt',
-            'data_set_publication_year': 'publication_year',
-            'data_set_original_release_date': 'release_dt',
-            # HACK elsewhere 'start_time and end_time': '',
-            'data_set_id': 'native_id',
-            # HACK elsewhere'': 'doi',
-            # HACK elsewhere 'maximum_latitude etc. etc. etc.': '',
-            'data_set_version': 'version',
-            'data_set_name': 'name',
-            'data_set_citation': 'cite_metadata',
-            'data_set_description': 'description',
-            # Not sure'': 'type',
-            'data_set_location': 'url',
-            'data_set_variables': 'attributes'
-        }
 
         #This desperately needs to get added to the webform
         self._identifiers = {
@@ -290,7 +254,7 @@ class Dataset(GcisObject):
         self.note = None
         self.activity = None
 
-        super(Dataset, self).__init__(data, fields=self.gcis_fields, trans=self.translations)
+        super(Dataset, self).__init__(data, fields=self.gcis_fields, trans=trans)
 
         self.identifier = self._identifiers[self.name] if self.name in self._identifiers else self.name
 
@@ -352,24 +316,12 @@ class Dataset(GcisObject):
             
             
 class Activity(GcisObject):
-    def __init__(self, data):
+    def __init__(self, data, trans=()):
         self.gcis_fields = ['start_time', 'uri', 'methodology', 'data_usage', 'href', 'metholodogies', 'end_time',
                             'output_artifacts', 'duration', 'identifier', 'publication_maps', 'computing_environment',
                             'software', 'visualization_software', 'notes']
 
-        self.translations = {
-            'how_much_time_was_invested_in_creating_the_image': 'duration',
-            '35_what_are_all_of_the_files_names_and_extensions_associated_with_this_image': 'output_artifacts',
-            'what_operating_systems_and_platforms_were_used': 'computing_environment',
-            'what_analytical_statistical_methods_were_employed_to_the_data': 'methodology',
-            'describe_how_the_data_was_used_in_the_image_figure_creation': 'data_usage',
-            'list_the_name_and_version_of_the_software': 'software',
-            'what_software_applications_were_used_to_manipulate_the_data': 'notes',
-            '33_what_software_applications_were_used_to_visualize_the_data': 'visualization_software'
-
-        }
-
-        super(Activity, self).__init__(data, fields=self.gcis_fields, trans=self.translations)
+        super(Activity, self).__init__(data, fields=self.gcis_fields, trans=trans)
 
     def as_json(self, indent=0):
         return super(Activity, self).as_json(omit_fields=['metholodogies', 'publication_maps'])
@@ -382,13 +334,11 @@ class Activity(GcisObject):
 
 
 class Person(Gcisbase):
-    def __init__(self, data):
+    def __init__(self, data, trans=()):
         self.gcis_fields = ['first_name', 'last_name', 'middle_name', 'contributors', 'url', 'uri', 'href', 'orcid',
                             'id']
 
-        self.translations = {}
-
-        super(Person, self).__init__(data, fields=self.gcis_fields, trans=self.translations)
+        super(Person, self).__init__(data, fields=self.gcis_fields, trans=trans)
 
     def as_json(self, indent=0):
         return super(Person, self).as_json(omit_fields=['contributors'])
@@ -401,10 +351,8 @@ class Person(Gcisbase):
 
 
 class Organization(Gcisbase):
-    def __init__(self, data):
+    def __init__(self, data, trans=()):
         self.gcis_fields = ['organization_type_identifier', 'url', 'uri', 'href', 'country_code', 'identifier', 'name']
-
-        self.translations = {}
 
         self._identifiers = {
             'NOAA NCDC/CICS-NC': 'cooperative-institute-climate-satellites-nc',
@@ -436,7 +384,7 @@ class Organization(Gcisbase):
             'Texas Tech University': 'texas-tech-university'
         }
 
-        super(Organization, self).__init__(data, fields=self.gcis_fields, trans=self.translations)
+        super(Organization, self).__init__(data, fields=self.gcis_fields, trans=trans)
 
         if not self.identifier:
             self.identifier = self._identifiers[self.name] if self.name in self._identifiers else None
@@ -527,18 +475,8 @@ class Role(object):
 
 
 class Parent(Gcisbase):
-    def __init__(self, data):
+    def __init__(self, data, trans=()):
         self.gcis_fields = ['relationship', 'url', 'publication_type_identifier', 'label', 'activity_uri', 'note']
-
-        self.translations = {
-            'what_type_of_publication_was_the_figure_published_in': 'publication_type_identifier',
-            'name_title': 'label',
-            'article_title': 'label',
-            'book_title': 'label',
-            'web_page_title': 'label',
-            'conference_title': 'label',
-            'title': 'label',
-        }
 
         self.publication_type_map = {
             'report': 'report',
@@ -638,7 +576,7 @@ class Parent(Gcisbase):
 
         self._publication_type_identifier = None
 
-        super(Parent, self).__init__(data, fields=self.gcis_fields, trans=self.translations)
+        super(Parent, self).__init__(data, fields=self.gcis_fields, trans=trans)
 
         #HACK: Set default relationship type
         self.relationship = self.relationship if self.relationship else 'prov:wasDerivedFrom'
