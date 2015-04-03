@@ -4,7 +4,7 @@ import getpass
 import requests
 import re
 
-from gcis_clients.domain import Figure
+from gcis_clients.domain import Figure, Image, Dataset, Parent
 
 
 def get_credentials():
@@ -24,6 +24,61 @@ def parse_title(graphic_title):
         return match.group(0), graphic_title[match.end(0):].strip()
     else:
         return None, graphic_title
+
+
+def populate_figure(fig_json):
+    f = Figure({})
+    try:
+        f.figure_num, f.title = parse_title(fig_json['graphics_title'])
+        f.identifier = fig_json['figure_id'] if fig_json['figure_id'] else re.sub('\W', '_', f.title).lower()
+        f.create_dt = fig_json['graphics_create_date']
+        f.time_start, f.time_end = fig_json['period_record']
+        f.lat_min, f.lat_max, f.lon_min, f.lon_max = fig_json['spatial_extent']
+    except Exception, e:
+        print e
+
+    return f
+
+
+def populate_image(img_json):
+    img = Image({})
+    try:
+        img.title = img_json['graphics_title']
+        img.identifier = img_json['image_id'] if img_json['image_id'] else re.sub('\W', '_', img.title).lower()
+        img.create_dt = img_json['graphics_create_date']
+        img.time_start, img.time_end = img_json['period_record']
+        img.lat_min, img.lat_max, img.lon_min, img.lon_max = img_json['spatial_extent']
+    except Exception, e:
+        print e
+
+    return img
+
+
+def populate_dataset(ds_json):
+    ds = Dataset({})
+    try:
+        ds.name = ds_json['dataset_name']
+        ds.url = ds_json['dataset_url']
+    except Exception, e:
+        print e
+
+    image_select = ds_json['imageSelect'] if 'imageSelect' in ds_json else []
+    associated_images = [idx for idx, value in enumerate(image_select) if value == 'on']
+
+    return ds, associated_images
+
+
+def populate_parent(pub_json):
+    p = Parent({})
+    try:
+        p.publication_type_identifier = pub_json['publicationType'].lower
+        p.label = pub_json[''] #title or whatever TODO: add a map for each publication to its title or name
+        p.url = ''
+
+    except Exception, e:
+        print e
+
+    return p
 
 
 class SurveyClient:
@@ -50,21 +105,26 @@ class SurveyClient:
     def get_survey(self, fig_url, download_images=False):
         full_url = '{b}{url}?token={t}'.format(b=self.base_url, url=fig_url, t=self.token)
         survey_json = requests.get(full_url).json()
-        fig_json = survey_json[0]['t1']['figure']
+        tier1_json = survey_json[0]['t1']
+        fig_json = tier1_json['figure']
 
         #It's not worth trying to translations on this data; it's too different
-        f = Figure({})
-        f.figure_num, f.title = parse_title(fig_json['graphics_title'])
-        f.identifier = fig_json['figure_id'] if fig_json['figure_id'] else re.sub('\W', '_', f.title).lower()
-        f.time_start, f.time_end = fig_json['period_record']
-        f.lat_min, f.lat_max, f.lon_min, f.lon_max = fig_json['spatial_extent']
-        f.create_dt = fig_json['graphics_create_date']
+        f = populate_figure(fig_json)
 
-        __blah = [
-            'keywords',
-            'report_identifier', 'chapter', 'submission_dt',
-            'source_citation', 'attributes', 'chapter_identifier', 'images'
-        ]
+        if 'images' in tier1_json:
+            images = [populate_image(img) for img in tier1_json['images']]
+            f.images.extend(images)
+
+        if 'datasets' in tier1_json:
+            datasets = [populate_dataset(ds) for ds in tier1_json['datasets']]
+
+            #Associate datasets with images
+            for ds, img_idxs in datasets:
+                for idx in img_idxs:
+                    f.images[idx].datasets.append(ds)
+
+        if 'origination' in tier1_json and tier1_json['origination'] not in ('Original',):
+            f.parents.append(populate_parent(tier1_json['publication']))
 
         return f
 

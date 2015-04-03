@@ -92,6 +92,9 @@ def test_domain():
     assert len(f.contributors) == 2
     assert all([isinstance(cont, Contributor) for cont in f.contributors])
 
+    empty_img = Image({})
+    assert empty_img.identifier is None
+
 
 def test_domain_as_json():
     f = Figure(json.loads(test_figure_json))

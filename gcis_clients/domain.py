@@ -172,7 +172,7 @@ class Image(GcisObject):
         super(Image, self).__init__(data, fields=self.gcis_fields, trans=trans)
 
         #Hack
-        self.identifier = self.identifier.replace('/image/', '')
+        self.identifier = self.identifier.replace('/image/', '') if self.identifier else None
 
         self.local_path = local_path
         self.remote_path = remote_path
