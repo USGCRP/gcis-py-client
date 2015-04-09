@@ -3,6 +3,7 @@ __author__ = 'abuddenberg'
 import getpass
 import requests
 import re
+from os.path import join, basename
 
 from gcis_clients.domain import Figure, Image, Dataset, Parent
 
@@ -34,8 +35,9 @@ def populate_figure(fig_json):
         f.create_dt = fig_json['graphics_create_date']
         f.time_start, f.time_end = fig_json['period_record']
         f.lat_min, f.lat_max, f.lon_min, f.lon_max = fig_json['spatial_extent']
+        f.remote_path = fig_json['filepath']
     except Exception, e:
-        print e
+        print 'Exception: ', e
 
     return f
 
@@ -49,7 +51,7 @@ def populate_image(img_json):
         img.time_start, img.time_end = img_json['period_record']
         img.lat_min, img.lat_max, img.lon_min, img.lon_max = img_json['spatial_extent']
     except Exception, e:
-        print e
+        print 'Exception: ', e
 
     return img
 
@@ -60,7 +62,7 @@ def populate_dataset(ds_json):
         ds.name = ds_json['dataset_name']
         ds.url = ds_json['dataset_url']
     except Exception, e:
-        print e
+        print 'Exception: ', e
 
     image_select = ds_json['imageSelect'] if 'imageSelect' in ds_json else []
     associated_images = [idx for idx, value in enumerate(image_select) if value == 'on']
@@ -76,13 +78,13 @@ def populate_parent(pub_json):
         p.url = ''
 
     except Exception, e:
-        print e
+        print 'Exception: ', e
 
     return p
 
 
 class SurveyClient:
-    def __init__(self, url, token, local_image_dir=None, remote_dir='/system/files/'):
+    def __init__(self, url, token, local_download_dir='.'):
         self.base_url = url
 
         #If token was not provided, obtain it
@@ -91,29 +93,30 @@ class SurveyClient:
 
         self.token = token
 
-        if local_image_dir:
-            self.images_dir = local_image_dir
-        else:
-            from gcis_clients import default_image_dir
-            self.images_dir = default_image_dir()
-        self.remote_image_dir = remote_dir
+        self.local_download_dir = local_download_dir
 
     def get_list(self):
         url = '{b}/metadata/list?token={t}'.format(b=self.base_url, t=self.token)
         return requests.get(url).json()
 
-    def get_survey(self, fig_url, download_images=False):
+    def get_survey(self, fig_url, do_download=False):
         full_url = '{b}{url}?token={t}'.format(b=self.base_url, url=fig_url, t=self.token)
         survey_json = requests.get(full_url).json()
-        tier1_json = survey_json[0]['t1']
-        fig_json = tier1_json['figure']
+        tier1_json = survey_json[0]['t1'] if survey_json[0]['t1'] is not None else []
 
-        #It's not worth trying to translations on this data; it's too different
-        f = populate_figure(fig_json)
+        f = None
+
+        if 'figure' in tier1_json:
+            #It's not worth trying to translations on this data; it's too different
+            f = populate_figure(tier1_json['figure'])
+            f.local_path = join(self.local_download_dir, basename(f.remote_path)) if f.remote_path else None
 
         if 'images' in tier1_json:
             images = [populate_image(img) for img in tier1_json['images']]
             f.images.extend(images)
+        elif 'figure' in tier1_json:
+            default_image = populate_image(tier1_json['figure'])
+            f.images.append(default_image)
 
         if 'datasets' in tier1_json:
             datasets = [populate_dataset(ds) for ds in tier1_json['datasets']]
@@ -126,5 +129,24 @@ class SurveyClient:
         if 'origination' in tier1_json and tier1_json['origination'] not in ('Original',):
             f.parents.append(populate_parent(tier1_json['publication']))
 
+        if do_download:
+            self.download_figure(f)
+
         return f
 
+    def download_figure(self, figure):
+        url = '{b}/{path}?token={t}'.format(b=self.base_url, path=figure.remote_path, t=self.token)
+        print url
+        resp = requests.get(url, stream=True)
+
+        if resp.status_code == 200:
+            filepath = join(self.local_download_dir, figure.remote_path.split('/')[-1])
+            with open(filepath, 'wb') as fig_out:
+                for bytes in resp.iter_content(chunk_size=4096):
+                    fig_out.write(bytes)
+
+            return filepath
+        elif resp.status_code == 404:
+            raise Exception('Image not found: {u}'.format(u=url))
+        else:
+            raise Exception(resp.status_code)

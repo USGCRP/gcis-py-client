@@ -50,7 +50,7 @@ class Gcisbase(object):
 
         return self
 
-    def as_json(self, indent=0, omit_fields=[]):
+    def as_json(self, indent=0, omit_fields=()):
         out_fields = set(self.gcis_fields) - (set(['uri', 'href']) | set(omit_fields))
         return json.dumps({f: getattr(self, f) for f in out_fields}, indent=indent)
 
@@ -80,7 +80,7 @@ class GcisObject(Gcisbase):
 
 
 class Figure(GcisObject):
-    def __init__(self, data, trans=()):
+    def __init__(self, data, local_path=None, remote_path=None, trans=()):
         self.gcis_fields = [
             'usage_limits', 'kindred_figures', 'time_start', 'time_end', 'keywords', 'lat_min', 'create_dt', 'lat_max',
             'title', 'ordinal', 'lon_min', 'report_identifier', 'chapter', 'submission_dt', 'uri', 'lon_max',
@@ -88,6 +88,9 @@ class Figure(GcisObject):
         ]
 
         super(Figure, self).__init__(data, fields=self.gcis_fields, trans=trans)
+
+        self.local_path = local_path
+        self.remote_path = remote_path
 
         #Special case for chapter
         chap_tree = data.pop('chapter', None)
@@ -126,8 +129,8 @@ class Figure(GcisObject):
         else:
             self.chapter = chp
 
-    def as_json(self, indent=0):
-        return super(Figure, self).as_json(omit_fields=['images', 'chapter', 'kindred_figures', 'keywords'])
+    def as_json(self, indent=0, omit_fields=('images', 'chapter', 'kindred_figures', 'keywords')):
+        return super(Figure, self).as_json(omit_fields=omit_fields)
 
     def __str__(self):
         string = '{f_id}: Figure {f_num}: {f_name}\n\tImages: {imgs}'.format(
@@ -153,11 +156,39 @@ class Figure(GcisObject):
         return super(Figure, self).merge(other)
 
 
+class Report(GcisObject):
+    def __init__(self, data, trans=()):
+        self.gcis_fields = ['doi', 'contact_note', 'title', 'publication_year', 'summary', 'url', 'contact_email', 'identifier', 'report_type_identifier']
+
+        super(Report, self).__init__(data, fields=self.gcis_fields, trans=trans)
+
+        # if self.report_type_identifier not in ['report', 'assessment', 'technical_input', 'indicator']:
+        #     raise ValueError("report_type_identifier must be one of 'report', 'assessment', 'technical_input', 'indicator'")
+
+    def as_json(self, indent=0, omit_fields=()):
+        return super(Report, self).as_json(omit_fields=omit_fields)
+
+    def __repr__(self):
+        return 'Report: {id}'.format(id=self.identifier)
+
+    def __str__(self):
+        return self.__repr__()
+
+
 class Chapter(GcisObject):
     def __init__(self, data):
         self.gcis_fields = ['report_identifier', 'identifier', 'number', 'url', 'title']
 
         super(Chapter, self).__init__(data, fields=self.gcis_fields)
+
+    def as_json(self, indent=0, omit_fields=()):
+        return super(Chapter, self).as_json(omit_fields=omit_fields)
+
+    def __repr__(self):
+        return 'Chapter: {id}'.format(id=self.identifier)
+
+    def __str__(self):
+        return self.__repr__()
 
 
 class Image(GcisObject):
@@ -271,8 +302,8 @@ class Dataset(GcisObject):
     def __str__(self):
         return self.__repr__()
 
-    def as_json(self, indent=0):
-        return super(Dataset, self).as_json(omit_fields=['files', 'parents', 'contributors', 'references'])
+    def as_json(self, indent=0, omit_fields=('files', 'parents', 'contributors', 'references')):
+        return super(Dataset, self).as_json(omit_fields=omit_fields)
 
     def merge(self, other):
         for k in self.__dict__:
@@ -326,8 +357,8 @@ class Activity(GcisObject):
 
         super(Activity, self).__init__(data, fields=self.gcis_fields, trans=trans)
 
-    def as_json(self, indent=0):
-        return super(Activity, self).as_json(omit_fields=['metholodogies', 'publication_maps'])
+    def as_json(self, indent=0, omit_fields=('metholodogies', 'publication_maps')):
+        return super(Activity, self).as_json(omit_fields=omit_fields)
 
     def __repr__(self):
         return 'Activity: {id}'.format(id=self.identifier)
@@ -343,8 +374,8 @@ class Person(Gcisbase):
 
         super(Person, self).__init__(data, fields=self.gcis_fields, trans=trans)
 
-    def as_json(self, indent=0):
-        return super(Person, self).as_json(omit_fields=['contributors'])
+    def as_json(self, indent=0, omit_fields=('contributors',)):
+        return super(Person, self).as_json(omit_fields=omit_fields)
 
     def __repr__(self):
         return 'Person: {id}: {fn} {ln}'.format(id=self.id, fn=self.first_name, ln=self.last_name)

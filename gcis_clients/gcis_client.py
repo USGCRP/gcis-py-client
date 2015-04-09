@@ -38,7 +38,7 @@ def http_resp(fn):
         if resp.status_code == 200:
             return resp
         else:
-            raise Exception(resp.text)
+            raise Exception('{url}\n{stat} {txt}'.format(url=resp.url, stat=resp.status_code, txt=resp.text))
     return wrapped
 
 
@@ -282,6 +282,60 @@ class GcisClient(object):
         url = '{b}/login.json'.format(b=self.base_url)
         resp = self.s.get(url, verify=False)
         return resp.status_code, resp.text
+
+    @http_resp
+    def get_report(self, report_id):
+        url = '{b}/report/{id}'.format(b=self.base_url, id=report_id)
+        resp = self.s.get(url, verify=False)
+
+        return resp.json()
+
+    @exists
+    def report_exists(self, report_id):
+        url = '{b}/report/{id}'.format(b=self.base_url, id=report_id)
+        return self.s.head(url, verify=False)
+
+    @http_resp
+    def create_report(self, report):
+        url = '{b}/report/'.format(b=self.base_url)
+        return self.s.post(url, data=report.as_json(), verify=False)
+
+    @http_resp
+    def update_report(self, report, old_id=None):
+        url = '{b}/report/{id}'.format(b=self.base_url, id=old_id or report.identifier)
+        return self.s.post(url, data=report.as_json(), verify=False)
+
+    @http_resp
+    def delete_report(self, report):
+        url = '{b}/report/{ds}'.format(b=self.base_url, ds=report.identifier)
+        return self.s.delete(url, verify=False)
+
+    @http_resp
+    def get_chapter(self, chapter_id):
+        url = '{b}/chapter/{id}'.format(b=self.base_url, id=chapter_id)
+        resp = self.s.get(url, verify=False)
+
+        return resp.json()
+
+    @exists
+    def chapter_exists(self, report_id, chapter_id):
+        url = '{b}/report/{rpt}/chapter/{id}'.format(b=self.base_url, rpt=report_id, id=chapter_id)
+        return self.s.head(url, verify=False)
+
+    @http_resp
+    def create_chapter(self, report_id, chapter):
+        url = '{b}/report/{rpt}/chapter/'.format(b=self.base_url, rpt=report_id)
+        return self.s.post(url, data=chapter.as_json(), verify=False)
+
+    @http_resp
+    def update_chapter(self, chapter, old_id=None):
+        url = '{b}/chapter/{id}'.format(b=self.base_url, id=old_id or chapter.identifier)
+        return self.s.post(url, data=chapter.as_json(), verify=False)
+
+    @http_resp
+    def delete_chapter(self, chapter):
+        url = '{b}/chapter/{ds}'.format(b=self.base_url, ds=chapter.identifier)
+        return self.s.delete(url, verify=False)
 
     def get_keyword_listing(self):
         url = '{b}/gcmd_keyword'.format(b=self.base_url)
