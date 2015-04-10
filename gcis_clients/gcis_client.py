@@ -93,7 +93,6 @@ class GcisClient(object):
             username, api_key = args[1:3]
         #User provides none or inconsistent args
         else:
-            print 'Using http://data.globalchange.gov'
             self.base_url = 'http://data.globalchange.gov'
 
         #If credentials were not provided, obtain them 

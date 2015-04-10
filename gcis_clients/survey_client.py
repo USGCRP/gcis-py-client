@@ -97,6 +97,7 @@ class SurveyClient:
 
     def get_list(self):
         url = '{b}/metadata/list?token={t}'.format(b=self.base_url, t=self.token)
+        print url
         return requests.get(url).json()
 
     def get_survey(self, fig_url, do_download=False):
