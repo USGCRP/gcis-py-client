@@ -37,7 +37,7 @@ def populate_figure(fig_json):
         f.lat_min, f.lat_max, f.lon_min, f.lon_max = fig_json['spatial_extent']
         f.remote_path = fig_json['filepath']
     except Exception, e:
-        print 'Exception: ', e
+        print 'Figure exception: ', e
 
     return f
 
@@ -51,7 +51,7 @@ def populate_image(img_json):
         img.time_start, img.time_end = img_json['period_record']
         img.lat_min, img.lat_max, img.lon_min, img.lon_max = img_json['spatial_extent']
     except Exception, e:
-        print 'Exception: ', e
+        print 'Image exception: ', e
 
     return img
 
@@ -62,7 +62,7 @@ def populate_dataset(ds_json):
         ds.name = ds_json['dataset_name']
         ds.url = ds_json['dataset_url']
     except Exception, e:
-        print 'Exception: ', e
+        print 'Dataset exception: ', e
 
     image_select = ds_json['imageSelect'] if 'imageSelect' in ds_json else []
     associated_images = [idx for idx, value in enumerate(image_select) if value == 'on']
@@ -102,7 +102,7 @@ class SurveyClient:
     def get_survey(self, fig_url, do_download=False):
         full_url = '{b}{url}?token={t}'.format(b=self.base_url, url=fig_url, t=self.token)
         survey_json = requests.get(full_url).json()
-        tier1_json = survey_json[0]['t1'] if survey_json[0]['t1'] is not None else []
+        tier1_json = survey_json[0]['t1'] if len(survey_json) > 0 and survey_json[0]['t1'] is not None else []
 
         f = None
 
@@ -124,7 +124,10 @@ class SurveyClient:
             #Associate datasets with images
             for ds, img_idxs in datasets:
                 for idx in img_idxs:
-                    f.images[idx].datasets.append(ds)
+                    try:
+                        f.images[idx].datasets.append(ds)
+                    except Exception, e:
+                        print 'Association exception: ', e
 
         if 'origination' in tier1_json and tier1_json['origination'] not in ('Original',):
             f.parents.append(populate_parent(tier1_json['publication']))
