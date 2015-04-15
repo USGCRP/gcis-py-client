@@ -31,9 +31,9 @@ def parse_creators(field):
     first_name, last_name = name_split[0], name_split[-1]
     org_name = rest[0] if len(rest) > 0 else None
 
-    contributor = Contributor({})
+    contributor = Contributor({}, hints=trans.CONTRIB_ROLES)
     contributor.person = Person({'first_name': first_name, 'last_name': last_name})
-    contributor.organization = Organization({'name': org_name})
+    contributor.organization = Organization({'name': org_name}, known_ids=trans.ORG_IDS)
 
     return contributor
 
@@ -93,7 +93,7 @@ class WebformClient:
         #Add provenance information (wasDerivedFrom parent)
         if 'what_type_of_source_provided_this_figure' in figure_json and figure_json[
             'what_type_of_source_provided_this_figure'] == 'published_source':
-            f.add_parent(Parent(deepcopy(f.original), trans=trans.PARENT_TRANSLATIONS))
+            f.add_parent(Parent(deepcopy(f.original), trans=trans.PARENT_TRANSLATIONS, search_hints=trans.PARENT_SEARCH_HINTS))
 
         if 'images' in webform_json[webform_nid]:
             for img_idx, image in enumerate(webform_json[webform_nid]['images']):
@@ -107,7 +107,7 @@ class WebformClient:
                 #TODO: this just keeps getting worse
                 if 'datasources' in webform_json[webform_nid]['images'][img_idx]:
                     for dataset_json in webform_json[webform_nid]['images'][img_idx]['datasources']:
-                        dataset = Dataset(dataset_json, trans=trans.DATASET_TRANSLATIONS)
+                        dataset = Dataset(dataset_json, trans=trans.DATASET_TRANSLATIONS, known_ids=trans.DATASET_IDS)
 
                         #Commence the hacks
                         try:
