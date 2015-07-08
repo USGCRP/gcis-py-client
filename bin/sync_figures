@@ -5,7 +5,7 @@ from gcis_clients import WebformClient, GcisClient, gcis_dev_auth, gcis_stage_au
 from gcis_clients.sync_utils import move_images_to_gcis, sync_dataset_metadata, realize_contributors, realize_parents
 from collections import OrderedDict
 
-webform = WebformClient('http://resources.assessment.globalchange.gov', webform_token)
+webform = WebformClient('https://ncares.cicsnc.org', webform_token)
 
 gcis = GcisClient('http://data.gcis-dev-front.joss.ucar.edu', *gcis_dev_auth)
 # gcis = GcisClient('http://data-stage.globalchange.gov', *gcis_stage_auth)
@@ -15,7 +15,7 @@ sync_metadata_tree = {
     'nca3': OrderedDict([
         #Chapter 2
         ('our-changing-climate', [
-            (webform_url, gcis_id)
+            # (webform_url, gcis_id)
             ('/metadata/figures/3074', 'ten-indicators-of-a-warming-world'),  # 2.1
             ('/metadata/figures/3293', 'observed-increase-in-frostfree-season-length'),  # 2.10
             ('/metadata/figures/3294', 'projected-changes-in-frostfree-season-length'),  # 2.11
@@ -33,7 +33,10 @@ sync_metadata_tree = {
             ('/metadata/figures/2939', 'projected-changes-in-soil-moisture-for-the-western-us'),  # 2.22
             ('/metadata/figures/3304', 'observed-trends-in-hurricane-power-dissipation'),  # 2.23
             ('/metadata/figures/3305', 'variation-of-storm-frequency-and-intensity-during-the-cold-season-november--march'),  # 2.24
+            ('/metadata/figures/2510', 'north-atlantic-sea-level-change'),  # 2.25
+            ('/metadata/figures/3289', 'past-and-projected-changes-in-global-sea-level-rise'),  # 2.26
             ('/metadata/figures/3067', 'ice-cover-in-the-great-lakes'),  # 2.27
+            ('/metadata/figures/3168', 'decline-in-arctic-sea-ice-extent'),  # 2.28
             ('/metadata/figures/3073', 'projected-arctic-sea-ice-decline'),  # 2.29
             ('/metadata/figures/3076', 'separating-human-and-natural-influences-on-climate'),  #2.3
             ('/metadata/figures/2940', 'as-oceans-absorb-co-they-become-more-acidic'),  # 2.30
@@ -50,12 +53,21 @@ sync_metadata_tree = {
         ('water-resources', [
             ('/metadata/figures/2676', 'projected-changes-in-snow-runoff-and-soil-moisture'),  # 3.1
             ('/metadata/figures/3573', 'projected-changes-in-water-withdrawals'),  # 3.11
+            ('/metadata/figures/3290', 'annual-surface-soil-moisture-trends'),  # 3.2
+            ('/metadata/figures/3160', 'seasonal-surface-soil-moisture-trends'),  # 3.3
             ('/metadata/figures/3171', 'streamflow-projections-for-river-basins-in-the-western-us'),  # 3.4
             ('/metadata/figures/3303', 'trends-in-flood-magnitude'),  # 3.5
+            ('/metadata/figures/3279', 'principal-us-groundwater-aquifers-and-use'),  # 3.6
+            ('/metadata/figures/3437', 'observed-changes-in-lake-stratification-and-ice-covered-area'),  # 3.7
+            ('/metadata/figures/3003', 'us-freshwater-withdrawal-consumptive-use-and-population-trends'),  # 3.8
+            ('/metadata/figures/2920', 'freshwater-withdrawals-by-sector'),  # 3.9
+            ('/metadata/figures/3174', 'us-water-withdrawal-distribution'),  # 3.10
+            ('/metadata/figures/2921', 'water-challenges-in-a-southeast-river-basin'),  # 3.12
         ]),
         #Chapter 4
         ('energy-supply-and-use', [
             ('/metadata/figures/3082', 'paths-of-hurricanes-katrina-and-rita-relative-to-oil-and-gas-production-facilities'),  # 4.1
+            ('/metadata/figures/3585', 'increase-in-cooling-demand-and-decrease-in-heating-demand'),  # 4.2
             ('/metadata/figures/3292', 'cooling-degree-days'),  # 4.3
             ('/metadata/figures/3291', 'projected-changes-in-seasonal-precipitation'),  # 4.4
             ('/metadata/figures/1536', 'california-power-plants-potentially-at-risk-from-sea-level-rise'),  # 4.5
@@ -63,6 +75,7 @@ sync_metadata_tree = {
         #Chapter 5
         ('transportation', [
             ('/metadata/figures/3088', 'possible-future-flood-depths-in-mobile-al-with-rising-sea-level'),  # 5.1
+            ('/metadata/figures/3089', 'airports-vulnerable-to-storm-surge'),  # 5.2
             ('/metadata/figures/2905', 'gulf-coast-transportation-hubs-at-risk'),  # 5.3
             ('/metadata/figures/3568', 'hurricane-sandy-causes-flooding-in-new-york-city-subway-stations'),  # 5.4
             ('/metadata/figures/2952', 'role-of-adaptive-strategies-and-tactics-in-reducing-impacts-and-consequences'),  # 5.5
@@ -70,7 +83,9 @@ sync_metadata_tree = {
         ]),
         #Chapter 6
         ('agriculture', [
+            ('/metadata/figures/3510', 'us-agriculture'),  # 6.1
             ('/metadata/figures/2867', 'agricultural-distribution'),  #6.2
+            ('/metadata/figures/2868', 'us-agricultural-trade'),  # 6.3
             ('/metadata/figures/3582', 'crop-yield-response-to-warming-in-californias-central-valley'),  #6.4
             ('/metadata/figures/2691', 'projected-changes-in-key-climate-variables-affecting-agricultural-productivity'),  # 6.5
             ('/metadata/figures/3081', 'reduced-winter-chilling-projected-for-california'),  # 6.6
@@ -83,9 +98,9 @@ sync_metadata_tree = {
             ('/metadata/figures/2977', 'effectiveness-of-forest-management-in-reducing-wildfire-risk'),  # 7.2
             ('/metadata/figures/2978', 'forest-vulnerability-to-changing-climate'),  # 7.3
             ('/metadata/figures/2985', 'forests-can-be-a-source--or-a-sink--for-carbon'),  # 7.4
+            ('/metadata/figures/3436', 'forest-growth-provides-an-important-carbon-sink'),  # 7.5
             ('/metadata/figures/3151', 'location-of-potential-forestry-biomass-resources'),  # 7.7
             ('/metadata/figures/3130', 'public-and-private-forestlands'),  # 7.8
-
         ]),
         #Chapter 8
         ('ecosystems', [
@@ -106,15 +121,15 @@ sync_metadata_tree = {
         ]),
         #Chapter 10
         ('water-energy-land-use', [
-            # ('/metadata/figures/2601', 'energy-water-land-and-climate-interactions'),  # 10.1
-            # ('/metadata/figures/2917', 'the-columbia-river-basin-land-use-and-land-cover'),  # 10.10
-            # ('/metadata/figures/2410', 'coasttocoast-100degree-days-in-2011'),  # 10.2
-            # ('/metadata/figures/2596', 'texas-summer-2011-record-heat-and-drought'),  # 10.3
-            # ('/metadata/figures/3635', 'water-use-for-electricity-generation-by-fuel-and-cooling-technology'),  # 10.5
-            # ('/metadata/figures/3158', 'projected-landuse-intensity-in-2030'),  # 10.6
-            # ('/metadata/figures/2986', 'hydraulic-fracturing-and-water-use'),  # 10.7
-            # ('/metadata/figures/2916', 'renewable-energy-and-land-use'),  # 10.8
-            # ('/metadata/figures/2918', 'water-stress-in-the-us'),  # 10.9
+            ('/metadata/figures/2601', 'energy-water-land-and-climate-interactions'),  # 10.1
+            ('/metadata/figures/2917', 'the-columbia-river-basin-land-use-and-land-cover'),  # 10.10
+            ('/metadata/figures/2410', 'coasttocoast-100degree-days-in-2011'),  # 10.2
+            ('/metadata/figures/2596', 'texas-summer-2011-record-heat-and-drought'),  # 10.3
+            ('/metadata/figures/3635', 'water-use-for-electricity-generation-by-fuel-and-cooling-technology'),  # 10.5
+            ('/metadata/figures/3158', 'projected-landuse-intensity-in-2030'),  # 10.6
+            ('/metadata/figures/2986', 'hydraulic-fracturing-and-water-use'),  # 10.7
+            ('/metadata/figures/2916', 'renewable-energy-and-land-use'),  # 10.8
+            ('/metadata/figures/2918', 'water-stress-in-the-us'),  # 10.9
 
         ]),
         #Chapter 11
@@ -132,6 +147,9 @@ sync_metadata_tree = {
         ]),
         #Chapter 13
         ('land-use-land-cover-change', [
+            ('/metadata/figures/2899', 'us-landcover-composition-in-2000'),  # 13.1
+            ('', 'projections-of-settlement-densities-20102050'),  # 13.2
+            ('/metadata/figures/2901', 'projected-land-covers-20102050'),  # 13.3
             ('/metadata/figures/2902', 'building-loss-by-fires-at-california-wildlandurban-interfaces'),  # 13.4
         ]),
         #Chapter 14
@@ -159,41 +177,52 @@ sync_metadata_tree = {
         ]),
         #Chapter 17
         ('southeast', [
-            # ('/metadata/figures/3577', 'billion-dollar-weatherclimate-disasters'),  # 17.1
-            # ('/metadata/figures/2633', 'trends-in-water-availability'),  # 17.11
-            # ('/metadata/figures/3108', 'shrinking-lands-for-tribal-communities'),  # 17.2
-            # ('/metadata/figures/2562', 'southeast-temperature-observed-and-projected'),  # 17.3
-            # ('/metadata/figures/2998', 'projected-change-in-number-of-days-over-95-f'),  # 17.4
-            # ('/metadata/figures/2999', 'projected-change-in-number-of-nights-below-32f'),  # 17.5
-            # ('/metadata/figures/2857', 'local-planning'),  # 17.9
+            ('/metadata/figures/3577', 'billion-dollar-weatherclimate-disasters'),  # 17.1
+            ('/metadata/figures/3482', 'groundlevel-ozone'),  # 17.10
+            ('/metadata/figures/2633', 'trends-in-water-availability'),  # 17.11
+            ('/metadata/figures/2859', 'a-southeast-river-basin-under-stress'),  # 17.12
+            ('/metadata/figures/3108', 'shrinking-lands-for-tribal-communities'),  # 17.2
+            ('/metadata/figures/2562', 'southeast-temperature-observed-and-projected'),  # 17.3
+            ('/metadata/figures/2998', 'projected-change-in-number-of-days-over-95-f'),  # 17.4
+            ('/metadata/figures/2999', 'projected-change-in-number-of-nights-below-32f'),  # 17.5
+            ('/metadata/figures/2855', 'vulnerability-to-sea-level-rise'),  # 17.6
+            ('/metadata/figures/2857', 'local-planning'),  # 17.9
         ]),
         #Chapter 18
         ('midwest', [
             ('/metadata/figures/2550', 'temperatures-are-rising-in-the-midwest'),  # 18.1
             ('/metadata/figures/2992', 'projected-midcentury-temperature-changes-in-the-midwest'),  # 18.2
             ('/metadata/figures/2841', 'crop-yields-decline-under-higher-temperatures'),  #18.3
+            ('/metadata/figures/2680', 'forest-composition-shifts'),  #18.4
             ('/metadata/figures/2993', 'reducing-emissions-improving-health'),  # 18.5
             ('/metadata/figures/2994', 'when-it-rains-it-pours'),  # 18.6
             ('/metadata/figures/3159', 'midwest-ice-cover-in-the-great-lakes')  #18.7
         ]),
         #Chapter 19
         ('great-plains', [
-            # ('/metadata/figures/2697', 'temperature-and-precipitation-distribution-in-the-great-plains'),  # 19.1
-            # ('/metadata/figures/2989', 'projected-change-in-number-of-hot-days'),  # 19.2
-            # ('/metadata/figures/2990', 'projected-change-in-number-of-warm-nights'),  # 19.3
-            # ('/metadata/figures/2991', 'projected-change-in-number-of-heavy-precipitation-days'),  # 19.4
-            # ('/metadata/figures/3002', 'projected-change-in-number-of-consecutive-dry-days'),  # 19.5
-            # ('/metadata/figures/2829', 'increases-in-irrigated-farmland-in-the-great-plains'),  # 19.6
-            # ('/metadata/figures/3280', 'historical-and-current-range-of-sage-grouse-habitat')  #19.7
+            ('/metadata/figures/2697', 'temperature-and-precipitation-distribution-in-the-great-plains'),  # 19.1
+            ('/metadata/figures/2549', 'days-above-100f-in-summer-2011'),  # 19.10
+            ('/metadata/figures/2989', 'projected-change-in-number-of-hot-days'),  # 19.2
+            ('/metadata/figures/2990', 'projected-change-in-number-of-warm-nights'),  # 19.3
+            ('/metadata/figures/2991', 'projected-change-in-number-of-heavy-precipitation-days'),  # 19.4
+            ('/metadata/figures/3002', 'projected-change-in-number-of-consecutive-dry-days'),  # 19.5
+            ('/metadata/figures/2829', 'increases-in-irrigated-farmland-in-the-great-plains'),  # 19.6
+            ('/metadata/figures/3280', 'historical-and-current-range-of-sage-grouse-habitat'),  #19.7
+            ('/metadata/figures/3282', 'population-change-in-the-great-plains')  #19.8
         ]),
         #Chapter 20
         ('southwest', [
             ('/metadata/figures/2996', 'projected-temperature-increases'),  #20.1
+            ('/metadata/figures/2567', 'longer-frostfree-season-increases-stress-on-crops'),  # 20.4
             ('/metadata/figures/2568', 'coastal-risks-posed-by-sea-level-rise-and-high-tides'),  #20.5
             ('/metadata/figures/3484', 'urban-heat-and-public-health'),  # 20.6
         ]),
         #Chapter 21
         ('northwest', [
+            ('/metadata/figures/2849', 'observed-shifts-in-streamflow-timing'),  # 21.1
+            ('/metadata/figures/3579', 'future-shift-in-timing-of-stream-flows-reduced-summer-flows'),  # 21.2
+            ('/metadata/figures/2850', 'projected-relative-sea-level-rise-for-the-latitude-of-newport-or'),  # 21.3
+            ('/metadata/figures/2934', 'rising-sea-levels-and-changing-flood-risks-in-seattle'),  # 21.4
             ('/metadata/figures/2851', 'adapting-the-nisqually-river-delta-to-sea-level-rise'),  #21.5
             ('/metadata/figures/2558', 'forest-mortality'),  # 21.6
         ]),
@@ -218,12 +247,15 @@ sync_metadata_tree = {
             ('/metadata/figures/3106', 'observed-ocean-warming'),  # 24.1
             ('/metadata/figures/2560', 'ocean-acidification-reduces-size-of-clams'),  #24.3
             ('/metadata/figures/2853', 'warming-seas-are-a-doubleblow-to-corals')  # 24.4
+            ('/metadata/figures/2854', 'fisheries-shifting-north')  # 24.5
         ]),
         #Chapter 25
         ('coastal-zone', [
+            ('/metadata/figures/3570', 'population-change-in-us-coastal-watershed-counties-19702010'),  # 25.1
             ('/metadata/figures/2540', 'adapting-coastal-infrastructure-to-sea-level-rise-and-land-loss'),  # 25.5
             ('/metadata/figures/3430', 'coasttoinland-economic-connections'),  # 25.7
             ('/metadata/figures/2543', 'coastal-ecosystem-services'),  # 25.8
+            ('/metadata/figures/3513', 'projected-land-loss-from-sea-level-rise-in-coastal-louisiana'),  # 25.9
         ]),
         #Chapter 26
         ('decision-support', [
@@ -232,6 +264,7 @@ sync_metadata_tree = {
             ('/metadata/figures/2950', 'decisionmaking-framework'),  # 26.3
             ('/metadata/figures/2611', 'linking-risk-assessment-and-risk-perception-with-risk-management-of-climate-change'),  # 26.4
             ('/metadata/figures/2962', 'land-use-planning-tool-for-the-upper-santa-cruz-watershed'),  # 26.5
+            ('/metadata/figures/2866', 'scenario-planning'),  # 26.6
         ]),
         #Chapter 27
         ('mitigation', [
@@ -348,7 +381,7 @@ images_with_multiple_figures = {
 def main():
     print gcis.test_login()
     sync(replace=False)
-    cleanup_after_replace()
+    # cleanup_after_replace()
 
 
 def sync(replace=False):
@@ -374,6 +407,8 @@ def sync(replace=False):
                 #Hack: override webform's title in favor of gcis
                 figure_obj.title = gcis_fig.title if gcis_fig.title not in (None, '') else figure_obj.title
 
+                #Hack: override webform's url in favor of gics
+                figure_obj.url = gcis_fig.url if gcis_fig.url not in (None, '') else figure_obj.url
 
                 if len(gcis_fig.contributors) > 1:
                     print '*** Multiple contributors: ', gcis_id

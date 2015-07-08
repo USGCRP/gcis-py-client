@@ -37,7 +37,8 @@ class Gcisbase(object):
                 except AttributeError:
                     pass
                 finally:
-                    setattr(self, k, data[k])
+                    if data[k]:
+                        setattr(self, k, data[k])
 
     def merge(self, other):
         #This sucks
@@ -84,7 +85,7 @@ class Figure(GcisObject):
         self.gcis_fields = [
             'usage_limits', 'kindred_figures', 'time_start', 'time_end', 'keywords', 'lat_min', 'create_dt', 'lat_max',
             'title', 'ordinal', 'lon_min', 'report_identifier', 'chapter', 'submission_dt', 'uri', 'lon_max',
-            'caption', 'source_citation', 'attributes', 'identifier', 'chapter_identifier', 'images'
+            'caption', 'source_citation', 'attributes', 'identifier', 'chapter_identifier', 'images', 'url'
         ]
 
         super(Figure, self).__init__(data, fields=self.gcis_fields, trans=trans)
@@ -248,7 +249,7 @@ class Dataset(GcisObject):
 
         super(Dataset, self).__init__(data, fields=self.gcis_fields, trans=trans)
 
-        self.identifier = self._identifiers[self.name] if self.name in self._identifiers else self.name
+        self.identifier = self._identifiers[self.name] if self._identifiers and self.name in self._identifiers else self.name
 
         #Hack to fix a particular kind of bad URL
         if self.url and self.url.startswith('ttp://'):
@@ -404,18 +405,10 @@ class Role(object):
 
 
 class Parent(Gcisbase):
-    def __init__(self, data, trans=(), search_hints=None):
+    def __init__(self, data, trans=(), pubtype_map=None, search_hints=None):
         self.gcis_fields = ['relationship', 'url', 'publication_type_identifier', 'label', 'activity_uri', 'note']
 
-        self.publication_type_map = {
-            'report': 'report',
-            'journal_article': 'article',
-            'book_section': 'report',
-            'electronic_article': 'article',
-            'web_page': 'webpage',
-            'book': 'book',
-            'conference_proceedings': 'generic',
-        }
+        self.publication_type_map = pubtype_map
 
         self.search_hints = search_hints
         self._publication_type_identifier = None
@@ -426,7 +419,7 @@ class Parent(Gcisbase):
         self.relationship = self.relationship if self.relationship else 'prov:wasDerivedFrom'
 
         #HACK to smooth out ambiguous search results
-        if self.publication_type_identifier in self.search_hints and self.label in \
+        if self.search_hints and self.publication_type_identifier in self.search_hints and self.label in \
                 self.search_hints[self.publication_type_identifier]:
 
             hint = self.search_hints[self.publication_type_identifier][self.label]
@@ -446,7 +439,7 @@ class Parent(Gcisbase):
     @publication_type_identifier.setter
     def publication_type_identifier(self, value):
         self._publication_type_identifier = self.publication_type_map[value] \
-            if value in self.publication_type_map else '**MISSING**' + value
+            if self.publication_type_map and value in self.publication_type_map else value
 
     def __repr__(self):
         return '{rel}: {type}: {url}: {lbl}'.format(

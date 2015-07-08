@@ -120,7 +120,10 @@ ORG_IDS = {
     'Susanne Moser Research & Consulting': 'susanne-moser-research-consulting',
     'NEMAC': 'national-environmental-modeling-analysis-center',
     'LBNL': 'lawrence-berkeley-national-laboratory',
-    'Texas Tech University': 'texas-tech-university'
+    'Texas Tech University': 'texas-tech-university',
+    'NASA': 'national-aeronautics-space-administration',
+    'GATech': 'georgia-institute-technology',
+    'UW': 'university-washington'
 }
 
 CONTRIB_ROLES = {
@@ -156,7 +159,11 @@ CONTRIB_ROLES = {
     'William Elder': 'scientist',
     'Greg Dobson': 'analyst',
     'Michael Wehner': 'scientist',
-    'Katharine Hayhoe': 'scientist'
+    'Katharine Hayhoe': 'scientist',
+    'Walt Meier': 'scientist',
+    'Aris Georgakakos': 'scientist',
+    'Matthew Peters': 'scientist',
+    'Robert Norheim': 'scientist'
 }
 
 PARENT_TRANSLATIONS = {
@@ -167,6 +174,16 @@ PARENT_TRANSLATIONS = {
     'web_page_title': 'label',
     'conference_title': 'label',
     'title': 'label',
+}
+
+PARENT_PUBTYPE_MAP = {
+    'report': 'report',
+    'journal_article': 'article',
+    'book_section': 'report',
+    'electronic_article': 'article',
+    'web_page': 'webpage',
+    'book': 'book',
+    'conference_proceedings': 'generic',
 }
 
 PARENT_SEARCH_HINTS = {
@@ -200,7 +217,15 @@ PARENT_SEARCH_HINTS = {
         '2009 State of the Climate Highlights': 'noaa-stateofclim-2009',
         'Climate of the Southeast United States: Variability, change, impacts and vulnerability.': ('book', '7951fbd8-5877-41aa-ae62-9da3eb56b5c5'),
         'A Reef Manager\'s Guide to Coral Bleaching': ('book', 'd6f69088-1025-4ce7-b0e1-54ab6403a951'),
-        'Climate Stabilization Targets: Emissions, Concentrations, and Impacts over Decades to Millennia': ('book', 'f5b281a2-38d2-4633-84db-fd37fa0fb3e6')
+        'Climate Stabilization Targets: Emissions, Concentrations, and Impacts over Decades to Millennia': ('book', 'f5b281a2-38d2-4633-84db-fd37fa0fb3e6'),
+        'Water Resources Sector Technical Input Report in Support of the U.S. Global Change Research Program': 'nca-waterresourcessector-2013',
+        'Estimated Use of Water in the United States in 2005': 'usgs-circular-1344',
+        'Annual Energy Outlook 2008': 'aeo2008',
+        'Value of U.S. agricultural trade, by fiscal year. U.S. Department of Agriculture, Economic Research Service': ('webpage', '319332d5-ec59-4d6d-8411-5eb57f38141d'),
+        'Future of America\'s Forest and Rangelands: Forest Service 2010 Resources Planning Act Assessment': 'usfs-gtr-wo-87',
+        'Assessment of Climate Change in the Southwest United States: A Report Prepared for the National Climate Assessment': ('book', 'c9625c65-c20f-4163-87fe-cebf734f7836'),
+        'Sea-Level Rise for the Coasts of California, Oregon, and Washington: Past, Present, and Future': ('book', 'a36230af-24e6-42c8-8d68-17bcab910595'),
+        'Water Planning: A Review of Promising New Methods.': ('generic', '7bd61959-19a0-43ad-80ae-d786619956a1')
 
     },
     'webpage': {
@@ -242,7 +267,8 @@ PARENT_SEARCH_HINTS = {
         'Range-wide patterns of greater  sage-grouse persistence': '10.1111/j.1472-4642.2008.00502.x',
         'Monitoring and understanding changes in heat waves, cold waves, floods and droughts in the United States: State of Knowledge': '10.1175/BAMS-D-12-00066.1',
         'How do we know the world has warmed?': '10.1175/BAMS-91-7-StateoftheClimate',
-        'Attribution of observed historical near-surface temperature variations to anthropogenic and natural causes usingCMIP5simulations': '10.1002/jgrd.50239'
+        'Attribution of observed historical near-surface temperature variations to anthropogenic and natural causes usingCMIP5simulations': '10.1002/jgrd.50239',
+        'Evaluating global trends (1988-2010) in harmonized multi-satellite surface soil moisture': '10.1029/2012gl052988'
 
     },
     'book': {
