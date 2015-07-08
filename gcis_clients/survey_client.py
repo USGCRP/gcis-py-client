@@ -5,7 +5,8 @@ import requests
 import re
 from os.path import join, basename
 
-from gcis_clients.domain import Figure, Image, Dataset, Parent
+from gcis_clients.domain import Figure, Image, Dataset, Parent, Contributor, Person, Organization
+import survey_transforms as trans
 
 
 def get_credentials():
@@ -32,10 +33,10 @@ def populate_figure(fig_json):
     try:
         f.figure_num, f.title = parse_title(fig_json['graphics_title'])
         f.identifier = fig_json['figure_id'] if fig_json['figure_id'] else re.sub('\W', '_', f.title).lower()
-        f.create_dt = fig_json['graphics_create_date']
-        f.time_start, f.time_end = fig_json['period_record']
+        f.create_dt = fig_json['graphics_create_date'].strip()
+        if any(fig_json['period_record']):
+            f.time_start, f.time_end = [d.strip() for d in fig_json['period_record']]
         f.lat_min, f.lat_max, f.lon_min, f.lon_max = fig_json['spatial_extent']
-        f.remote_path = fig_json['filepath']
     except Exception, e:
         print 'Figure exception: ', e
 
@@ -46,9 +47,10 @@ def populate_image(img_json):
     img = Image({})
     try:
         img.title = img_json['graphics_title']
-        img.identifier = img_json['image_id'] if img_json['image_id'] else re.sub('\W', '_', img.title).lower()
-        img.create_dt = img_json['graphics_create_date']
-        img.time_start, img.time_end = img_json['period_record']
+        img.identifier = img_json['image_id'] if 'image_id' in img_json and  img_json['image_id'] else re.sub('\W', '_', img.title).lower()
+        img.create_dt = img_json['graphics_create_date'].strip()
+        if any(img_json['period_record']):
+            img.time_start, img.time_end = [d.strip() for d in img_json['period_record']]
         img.lat_min, img.lat_max, img.lon_min, img.lon_max = img_json['spatial_extent']
     except Exception, e:
         print 'Image exception: ', e
@@ -73,18 +75,32 @@ def populate_dataset(ds_json):
 def populate_parent(pub_json):
     p = Parent({})
     try:
-        p.publication_type_identifier = pub_json['publicationType'].lower
-        p.label = pub_json[''] #title or whatever TODO: add a map for each publication to its title or name
+        p = Parent(pub_json, trans=trans.PARENT_TRANSLATIONS, pubtype_map=trans.PARENT_PUBTYPE_MAP)
         p.url = ''
 
     except Exception, e:
-        print 'Exception: ', e
+        print 'Parent exception: ', e
 
     return p
 
 
+def populate_contributors(field):
+    s = field.split(',')
+    name, rest = s[0], s[1:]
+
+    name_split = name.split()
+    first_name, last_name = name_split[0], name_split[-1]
+    org_name = rest[0] if len(rest) > 0 else None
+
+    contributor = Contributor({}, hints=trans.CONTRIB_ROLES)
+    contributor.person = Person({'first_name': first_name, 'last_name': last_name})
+    contributor.organization = Organization({'name': org_name}, known_ids=trans.ORG_IDS)
+
+    return contributor
+
+
 class SurveyClient:
-    def __init__(self, url, token, local_download_dir='.'):
+    def __init__(self, url, token, local_download_dir=None):
         self.base_url = url
 
         #If token was not provided, obtain it
@@ -93,7 +109,11 @@ class SurveyClient:
 
         self.token = token
 
-        self.local_download_dir = local_download_dir
+        if local_download_dir:
+            self.local_download_dir = local_download_dir
+        else:
+            from gcis_clients import default_image_dir
+            self.local_download_dir = default_image_dir()
 
     def get_list(self):
         url = '{b}/metadata/list?token={t}'.format(b=self.base_url, t=self.token)
@@ -108,9 +128,14 @@ class SurveyClient:
         f = None
 
         if 'figure' in tier1_json:
+            figure_json = tier1_json['figure']
             #It's not worth trying to translations on this data; it's too different
-            f = populate_figure(tier1_json['figure'])
+            f = populate_figure(figure_json)
+            f.remote_path = survey_json[0]['filepath']
             f.local_path = join(self.local_download_dir, basename(f.remote_path)) if f.remote_path else None
+
+            if 'origination' in figure_json and figure_json['origination'] not in ('Original',) and 'publication' in figure_json:
+                f.parents.append(populate_parent(figure_json['publication']))
 
         if 'images' in tier1_json:
             images = [populate_image(img) for img in tier1_json['images']]
@@ -130,8 +155,8 @@ class SurveyClient:
                     except Exception, e:
                         print 'Association exception: ', e
 
-        if 'origination' in tier1_json and tier1_json['origination'] not in ('Original',):
-            f.parents.append(populate_parent(tier1_json['publication']))
+        if 'poc' in tier1_json:
+            f.add_contributor(populate_contributors(tier1_json['poc']))
 
         if do_download:
             self.download_figure(f)
@@ -140,7 +165,6 @@ class SurveyClient:
 
     def download_figure(self, figure):
         url = '{b}/{path}?token={t}'.format(b=self.base_url, path=figure.remote_path, t=self.token)
-        print url
         resp = requests.get(url, stream=True)
 
         if resp.status_code == 200:

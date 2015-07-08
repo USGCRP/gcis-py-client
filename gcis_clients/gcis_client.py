@@ -14,7 +14,7 @@ def check_image(fn):
         # if len(args) < 1 or not isinstance(args[0], Image):
         #     raise Exception('Invalid Image')
         if args[1].identifier in (None, ''):
-            raise Exception('Invalid identifier', args[0].identifier)
+            raise Exception('Invalid identifier', args[1].identifier)
         return fn(*args, **kwargs)
 
     return wrapped
@@ -117,6 +117,11 @@ class GcisClient(object):
         )
 
         resp = self.s.post(url, data=figure.as_json(), verify=False)
+        if resp.status_code != 200:
+            return resp
+
+        if figure.local_path is not None:
+            self.upload_figure_file(report_id, chapter_id, figure.identifier, figure.local_path)
 
         if skip_images is False:
             for image in figure.images:
@@ -160,10 +165,24 @@ class GcisClient(object):
         url = '{b}/report/{rpt}/figure/{fig}'.format(b=self.base_url, rpt=report_id, fig=figure_id)
         return self.s.delete(url, verify=False)
 
+    @http_resp
+    def upload_figure_file(self, report_id, chapter_id, figure_id, local_path):
+        # report/usgcrp-climate-and-health-assessment-draft/chapter/climate-change-and-human-health/figure/files/emissions_levels_determine_temperature_rises/
+        url = '{b}/report/{rpt}/chapter/{chp}/figure/files/{id}/{fn}'.format(b=self.base_url, rpt=report_id, chp=chapter_id, id=figure_id, fn=basename(local_path))
+        # For future multi-part encoding support
+        # return self.s.put(url, headers=headers, files={'file': (filename, open(filepath, 'rb'))})
+        if not os.path.exists(local_path):
+            raise Exception('File not found: ' + local_path)
+
+        return self.s.put(url, data=open(local_path, 'rb'), verify=False)
+
     @check_image
     def create_image(self, image, report_id=None, figure_id=None):
         url = '{b}/image/'.format(b=self.base_url)
         resp = self.s.post(url, data=image.as_json(), verify=False)
+        print image.as_json()
+        if resp.status_code != 200:
+            return resp
         
         if image.local_path is not None:
             self.upload_image_file(image.identifier, image.local_path)
@@ -552,9 +571,13 @@ class GcisClient(object):
     def associate_contributor_with_figure(self, contrib, report_id, chapter_id, figure_id):
         url = '{b}/report/{rpt}/chapter/{chp}/figure/contributors/{fig}'.format(b=self.base_url, rpt=report_id, chp=chapter_id, fig=figure_id)
 
-        data = {
-            'role': contrib.role.type_id,
-        }
+        try:
+            data = {
+                'role': contrib.role.type_id,
+            }
+        except AttributeError as e:
+            print 'Contributor {c} missing role'.format(c=contrib)
+            raise e
 
         if contrib.person is not None and contrib.person.id is not None:
             data['person_id'] = contrib.person.id

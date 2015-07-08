@@ -246,7 +246,7 @@ sync_metadata_tree = {
         ('oceans-marine-resources', [
             ('/metadata/figures/3106', 'observed-ocean-warming'),  # 24.1
             ('/metadata/figures/2560', 'ocean-acidification-reduces-size-of-clams'),  #24.3
-            ('/metadata/figures/2853', 'warming-seas-are-a-doubleblow-to-corals')  # 24.4
+            ('/metadata/figures/2853', 'warming-seas-are-a-doubleblow-to-corals'),  # 24.4
             ('/metadata/figures/2854', 'fisheries-shifting-north')  # 24.5
         ]),
         #Chapter 25

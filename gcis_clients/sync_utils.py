@@ -48,12 +48,11 @@ def realize_contributors(gcis_client, contributors):
             print '\t\t', name_matches
 
         if org.identifier in (None, '') and org.name not in (None, ''):
-
             print 'No ID found for ' + org.name
 
     #Check if we missed any organizations in our hardcoding...
     if not all(map(lambda c: c.organization.identifier is not None, contributors)):
-        print contributors
+        print 'Missing organizations: ', contributors
 
 
 def realize_parents(gcis_client, parents):
