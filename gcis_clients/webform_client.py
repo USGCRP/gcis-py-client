@@ -50,7 +50,6 @@ def get_credentials():
 
 
 class WebformClient:
-
     def __init__(self, url, token, local_image_dir=None, remote_dir='/system/files/'):
         self.base_url = url
 
@@ -93,7 +92,7 @@ class WebformClient:
         #Add provenance information (wasDerivedFrom parent)
         if 'what_type_of_source_provided_this_figure' in figure_json and figure_json[
             'what_type_of_source_provided_this_figure'] == 'published_source':
-            f.add_parent(Parent(deepcopy(f.original), trans=trans.PARENT_TRANSLATIONS))
+            f.add_parent(Parent(deepcopy(f.original), trans=trans.PARENT_TRANSLATIONS, pubtype_map=trans.PARENT_PUBTYPE_MAP, search_hints=trans.PARENT_SEARCH_HINTS))
 
         if 'images' in webform_json[webform_nid]:
             for img_idx, image in enumerate(webform_json[webform_nid]['images']):
