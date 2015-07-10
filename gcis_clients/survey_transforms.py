@@ -1,5 +1,19 @@
 __author__ = 'abuddenberg'
 
+DATASET_IDS = {
+    'U.S. Climate Divisional Dataset Version 2': 'nca3-cddv2-r1',
+    'World Climate Research Program\'s (WCRP\'s) Coupled Model Intercomparison Project phase 5 (CMIP5) multi-model ensemble': 'nca3-cmip5-r1',
+    'World Climate Research Program\'s (WCRP\'s) Coupled Model  Intercomparison Project phase 5 (CMIP5) multi-model ensemble': 'nca3-cmip5-r1'
+}
+
+COPYRIGHT_TRANSLATIONS = {
+    None: None,
+    'requested': 'Copyright protected. Obtain permission from the original figure source.',
+    'denied': 'Copyright protected. Obtain permission from the original figure source.',
+    'obtained': 'Copyright protected. Obtain permission from the original figure source.',
+    'original_work_nr': 'Free to use with credit to the original figure source.'
+}
+
 PARENT_TRANSLATIONS = {
     'publicationType': 'publication_type_identifier',
     'report_name': 'label',

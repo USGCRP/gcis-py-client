@@ -167,7 +167,6 @@ class GcisClient(object):
 
     @http_resp
     def upload_figure_file(self, report_id, chapter_id, figure_id, local_path):
-        # report/usgcrp-climate-and-health-assessment-draft/chapter/climate-change-and-human-health/figure/files/emissions_levels_determine_temperature_rises/
         url = '{b}/report/{rpt}/chapter/{chp}/figure/files/{id}/{fn}'.format(b=self.base_url, rpt=report_id, chp=chapter_id, id=figure_id, fn=basename(local_path))
         # For future multi-part encoding support
         # return self.s.put(url, headers=headers, files={'file': (filename, open(filepath, 'rb'))})
