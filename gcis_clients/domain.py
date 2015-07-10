@@ -134,7 +134,7 @@ class Figure(GcisObject):
         return super(Figure, self).as_json(omit_fields=omit_fields)
 
     def __str__(self):
-        string = '{f_id}: Figure {f_num}: {f_name}\n\tImages: {imgs}'.format(
+        string = '<Figure: id:{f_id} fignum:{f_num} name:{f_name}>\n\t[Images: {imgs}]'.format(
             f_id=self.identifier, f_num=self.figure_num, f_name=self.title, imgs=[i.identifier for i in self.images]
         )
         return string
@@ -170,7 +170,7 @@ class Report(GcisObject):
         return super(Report, self).as_json(omit_fields=omit_fields)
 
     def __repr__(self):
-        return 'Report: {id}'.format(id=self.identifier)
+        return '<Report: id:{id}>'.format(id=self.identifier)
 
     def __str__(self):
         return self.__repr__()
@@ -186,7 +186,7 @@ class Chapter(GcisObject):
         return super(Chapter, self).as_json(omit_fields=omit_fields)
 
     def __repr__(self):
-        return 'Chapter: {id}'.format(id=self.identifier)
+        return '<Chapter: id:{id}>'.format(id=self.identifier)
 
     def __str__(self):
         return self.__repr__()
@@ -224,7 +224,7 @@ class Image(GcisObject):
             self._create_dt = None
 
     def __str__(self):
-        return 'Image: {id}: {name}'.format(id=self.identifier, name=self.title)
+        return '<Image: id:{id} name:{name}>'.format(id=self.identifier, name=self.title)
 
 
 class Dataset(GcisObject):
@@ -234,7 +234,6 @@ class Dataset(GcisObject):
                         'processing_level', 'files', 'data_qualifier', 'access_dt', 'description', 'spatial_ref_sys',
                         'spatial_res', 'spatial_extent', 'doi', 'name', 'url', 'uri', 'identifier', 'release_dt',
                         'attributes']
-
 
         self._identifiers = known_ids
 
@@ -256,7 +255,7 @@ class Dataset(GcisObject):
             self.url = self.url.replace('ttp://', 'http://')
 
     def __repr__(self):
-        return 'Dataset: {id}: {name}'.format(id=self.identifier, name=self.name)
+        return '<Dataset: id:{id} name:{name}>'.format(id=self.identifier, name=self.name)
 
     def __str__(self):
         return self.__repr__()
@@ -320,7 +319,7 @@ class Activity(GcisObject):
         return super(Activity, self).as_json(omit_fields=omit_fields)
 
     def __repr__(self):
-        return 'Activity: {id}'.format(id=self.identifier)
+        return '<Activity: id:{id}>'.format(id=self.identifier)
 
     def __str__(self):
         return self.__repr__()
@@ -337,7 +336,7 @@ class Person(Gcisbase):
         return super(Person, self).as_json(omit_fields=omit_fields)
 
     def __repr__(self):
-        return 'Person: {id}: {fn} {ln}'.format(id=self.id, fn=self.first_name, ln=self.last_name)
+        return '<Person: id:{id} first:{fn} last:{ln}>'.format(id=self.id, fn=self.first_name, ln=self.last_name)
 
     def __str__(self):
         return self.__repr__()
@@ -355,7 +354,7 @@ class Organization(Gcisbase):
             self.identifier = self._identifiers[self.name] if self.name in self._identifiers else None
 
     def __repr__(self):
-        return 'Organization: {id}: {name}'.format(id=self.identifier, name=self.name)
+        return '<Organization: id:{id} name:{name}>'.format(id=self.identifier, name=self.name)
 
     def __str__(self):
         return self.__repr__()
@@ -387,7 +386,7 @@ class Contributor(Gcisbase):
         return self._role
 
     def __repr__(self):
-        return '({p}/{o}/{r})'.format(p=self.person, o=self.organization, r=self.role)
+        return '<Contributor: {p} {o} Role:{r}>'.format(p=self.person, o=self.organization, r=self.role)
 
     def __str__(self):
         return self.__repr__()
@@ -441,10 +440,23 @@ class Parent(Gcisbase):
         self._publication_type_identifier = self.publication_type_map[value] \
             if self.publication_type_map and value in self.publication_type_map else value
 
+    @staticmethod
+    def from_obj(gcis_obj):
+        gcis_obj_type = type(gcis_obj).__name__.lower()
+        label = gcis_obj.title if hasattr(gcis_obj, 'title') else '***MISSING***'
+
+        return Parent({
+            'relationship': 'prov:wasDerivedFrom',
+            'publication_type_identifier': gcis_obj_type,
+            'url': '/{type}/{id}'.format(type=gcis_obj_type, id=gcis_obj.identifier),
+            'label': label
+        })
+
     def __repr__(self):
-        return '{rel}: {type}: {url}: {lbl}'.format(
+        return '<Parent: rel:{rel} pub_type:{type} url:{url} label:{lbl}>'.format(
             rel=self.relationship, type=self.publication_type_identifier, url=self.url, lbl=self.label
         )
 
     def __str__(self):
         return self.__repr__()
+
