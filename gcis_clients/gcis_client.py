@@ -128,8 +128,14 @@ class GcisClient(object):
                 self.create_image(image),
                 self.associate_image_with_figure(image.identifier, report_id, figure.identifier)
 
+        for c in figure.contributors:
+            self.associate_contributor_with_figure(c, report_id, chapter_id, figure.identifier)
+
         for p in figure.parents:
-            self.associate_figure_with_parent(report_id, figure.identifier, p)
+            if p.activity:
+                self.create_or_update_activity(p.activity)
+            activity_id = p.activity.identifier if p.activity else None
+            self.associate_figure_with_parent(report_id, figure.identifier, p, activity_id=activity_id)
 
         return resp
 
@@ -156,7 +162,10 @@ class GcisClient(object):
             self.associate_contributor_with_figure(c, report_id, chapter_id, figure.identifier)
 
         for p in figure.parents:
-            self.associate_figure_with_parent(report_id, figure.identifier, p)
+            if p.activity:
+                self.create_or_update_activity(p.activity)
+            activity_id = p.activity.identifier if p.activity else None
+            self.associate_figure_with_parent(report_id, figure.identifier, p, activity_id=activity_id)
 
         return resp
 
@@ -187,26 +196,33 @@ class GcisClient(object):
             self.upload_image_file(image.identifier, image.local_path)
         if figure_id and report_id:
             self.associate_image_with_figure(image.identifier, report_id, figure_id)
-        for dataset in image.datasets:
-            if not self.dataset_exists(dataset.identifier):
-                self.create_dataset(dataset)
-            # if not self.activity_exists(dataset.activity.identifier):
-            #     self.create_activity(dataset.activity))
-            self.create_or_update_activity(dataset.activity)
-            self.associate_dataset_with_image(dataset.identifier, image.identifier,
-                                              activity_id=dataset.activity.identifier)
+        # for dataset in image.datasets:
+        #     if not self.dataset_exists(dataset.identifier):
+        #         self.create_dataset(dataset)
+        #     # if not self.activity_exists(dataset.activity.identifier):
+        #     #     self.create_activity(dataset.activity))
+        #     self.create_or_update_activity(dataset.activity)
+        #     self.associate_image_with_parent(dataset.identifier, image.identifier,
+        #                                       activity_id=dataset.activity.identifier)
+        for p in image.parents:
+            if p.activity:
+                self.create_or_update_activity(p.activity)
+
+            activity_id = p.activity.identifier if p.activity else None
+            self.associate_image_with_parent(image.identifier, p, activity_id=activity_id)
         return resp
 
     @check_image
     def update_image(self, image, old_id=None):
         url = '{b}/image/{img}'.format(b=self.base_url, img=old_id or image.identifier)
-        for dataset in image.datasets:
-            # self.update_activity(dataset.activity)
-            self.create_or_update_activity(dataset.activity)
-            self.associate_dataset_with_image(dataset.identifier, image.identifier,
-                                              activity_id=dataset.activity.identifier)
         for c in image.contributors:
             self.associate_contributor_with_image(c, image.identifier)
+
+        for p in image.parents:
+            if p.activity:
+                self.create_or_update_activity(p.activity)
+            activity_id = p.activity.identifier if p.activity else None
+            self.associate_image_with_parent(image.identifier, p, activity_id=activity_id)
 
         return self.s.post(url, data=image.as_json(), verify=False)
 
@@ -401,45 +417,6 @@ class GcisClient(object):
         url = '{b}/dataset/'.format(b=self.base_url)
         return self.s.get(url, params={'all': 1}, verify=False)
 
-    def associate_dataset_with_image(self, dataset_id, image_id, activity_id=None):
-        url = '{b}/image/prov/{img}'.format(b=self.base_url, img=image_id)
-
-        data = {
-            'parent_uri': '/dataset/' + dataset_id,
-            'parent_rel': 'prov:wasDerivedFrom'
-        }
-        if activity_id:
-            data['activity'] = activity_id
-
-        try:
-            self.delete_dataset_image_assoc(dataset_id, image_id)
-        except AssociationException as e:
-            print e.value
-
-        resp = self.s.post(url, data=json.dumps(data), verify=False)
-
-        if resp.status_code == 200:
-            return resp
-        else:
-            raise Exception('Dataset association failed:\n{url}\n{resp}'.format(url=url, resp=resp.text))
-
-    def delete_dataset_image_assoc(self, dataset_id, image_id):
-        url = '{b}/image/prov/{img}'.format(b=self.base_url, img=image_id)
-
-        data = {
-            'delete': {
-                'parent_uri': '/dataset/' + dataset_id,
-                'parent_rel': 'prov:wasDerivedFrom'
-            }
-        }
-        resp = self.s.post(url, data=json.dumps(data), verify=False)
-
-        if resp.status_code == 200:
-            return resp
-        else:
-            raise AssociationException(
-                'Dataset dissociation failed:\n{url}\n{resp}\n{d}'.format(url=url, resp=resp.text, d=data))
-
     def create_or_update_dataset(self, dataset):
         if self.dataset_exists(dataset.identifier):
             print 'Updating dataset: ' + dataset.identifier
@@ -625,24 +602,62 @@ class GcisClient(object):
         return self.s.post(url, data=json.dumps(data), verify=False)
 
     @http_resp
-    def associate_figure_with_parent(self, report_id, figure_id, parent):
+    def associate_figure_with_parent(self, report_id, figure_id, parent, activity_id=None):
         url = '{b}/report/{rpt}/figure/prov/{fig}'.format(b=self.base_url, rpt=report_id, fig=figure_id)
 
         data = {
             'parent_uri': parent.url,
             'parent_rel': parent.relationship
         }
+        if activity_id:
+            data['activity'] = activity_id
 
         try:
-            self.delete_figure_pub_assoc(report_id, figure_id, parent)
+            self.delete_figure_parent_assoc(report_id, figure_id, parent)
         except AssociationException as e:
             print e.value
 
         resp = self.s.post(url, data=json.dumps(data), verify=False)
         return resp
 
-    def delete_figure_pub_assoc(self, report_id, figure_id, parent):
+    def delete_figure_parent_assoc(self, report_id, figure_id, parent):
         url = '{b}/report/{rpt}/figure/prov/{fig}'.format(b=self.base_url, rpt=report_id, fig=figure_id)
+
+        data = {
+            'delete': {
+                'parent_uri': parent.url,
+                'parent_rel': parent.relationship
+            }
+        }
+        resp = self.s.post(url, data=json.dumps(data), verify=False)
+
+        if resp.status_code == 200:
+            return resp
+        else:
+            raise AssociationException(
+                'Parent dissociation failed:\n{url}\n{resp}\n{d}'.format(url=url, resp=resp.text, d=data))
+
+    @http_resp
+    def associate_image_with_parent(self, image_id, parent, activity_id=None):
+        url = '{b}/image/prov/{img}'.format(b=self.base_url, img=image_id)
+
+        data = {
+            'parent_uri': parent.url,
+            'parent_rel': parent.relationship
+        }
+        if activity_id:
+            data['activity'] = activity_id
+
+        try:
+            self.delete_dataset_image_assoc(image_id, parent)
+        except AssociationException as e:
+            print e.value
+
+        resp = self.s.post(url, data=json.dumps(data), verify=False)
+        return resp
+
+    def delete_dataset_image_assoc(self, image_id, parent):
+        url = '{b}/image/prov/{img}'.format(b=self.base_url, img=image_id)
 
         data = {
             'delete': {

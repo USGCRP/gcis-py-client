@@ -420,7 +420,7 @@ def sync(replace=False):
 
                     # #Remove existing parents
                     for p in gcis_fig.parents:
-                        gcis.delete_figure_pub_assoc(report_id, gcis_id, p)
+                        gcis.delete_figure_parent_assoc(report_id, gcis_id, p)
 
                     for image in gcis_fig.images:
                         #TODO: There are better ways to do this. Build File support.

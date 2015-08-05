@@ -1,13 +1,17 @@
+from __future__ import print_function
 __author__ = 'abuddenberg'
 
 import getpass
 import requests
 import re
 from os.path import join, basename
+import sys
 
-from gcis_clients.domain import Figure, Image, Dataset, Parent, Contributor, Person, Organization, Activity
+from gcis_clients.domain import Figure, Image, Dataset, Parent, Contributor, Person, Organization, Activity, Role
 import survey_transforms as trans
 
+def warning(*objs):
+    print("WARNING: ", *objs, file=sys.stderr)
 
 def get_credentials():
     #First check our magic enviroment variable (SURVEY_TOKEN)
@@ -38,7 +42,7 @@ def populate_figure(fig_json):
             f.time_start, f.time_end = [d.strip() for d in fig_json['period_record']]
         f.lat_min, f.lat_max, f.lon_min, f.lon_max = fig_json['spatial_extent']
     except Exception, e:
-        print 'Figure exception: ', e
+        warning('Figure exception: ', e)
 
     return f
 
@@ -47,27 +51,30 @@ def populate_image(img_json):
     img = Image({})
     try:
         img.title = img_json['graphics_title']
-        img.identifier = img_json['image_id'] if 'image_id' in img_json and  img_json['image_id'] else re.sub('\W', '_', img.title).lower()
+        img.identifier = img_json['image_id'] if 'image_id' in img_json and img_json['image_id'] else re.sub('\W', '_', img.title.strip().lower())
         img.create_dt = img_json['graphics_create_date'].strip()
         if any(img_json['period_record']):
             img.time_start, img.time_end = [d.strip() for d in img_json['period_record']]
         img.lat_min, img.lat_max, img.lon_min, img.lon_max = img_json['spatial_extent']
     except Exception, e:
-        print 'Image exception: ', e
+        warning('Image exception: ', e)
 
     return img
 
 
 def populate_dataset(ds_json):
     try:
+        if not ds_json['dataset_name']:
+            raise ValueError('Dataset name is missing')
+
         ds = Dataset({
             'name': ds_json['dataset_name'],
             'url': ds_json['dataset_url']
         }, known_ids=trans.DATASET_IDS)
 
     except Exception, e:
-        print 'Dataset exception: ', e
-        ds = Dataset({})
+        warning('Dataset exception: ', e)
+        ds = None
 
     image_select = ds_json['imageSelect'] if 'imageSelect' in ds_json else []
     associated_images = [idx for idx, value in enumerate(image_select) if value == 'on']
@@ -91,37 +98,78 @@ def populate_activity(mthd_json):
         act.visualization_software = ', '.join([vs for vs in mthd_json['dataset_visualization_software'] if vs])
 
     except Exception, e:
-        print 'Activity exception: ', e
+        warning('Activity exception: ', e)
 
     return act, mthd_json['image_name'], mthd_json['dataset']
 
 
 def populate_parent(pub_json):
-    p = Parent({})
     try:
         p = Parent(pub_json, trans=trans.PARENT_TRANSLATIONS, pubtype_map=trans.PARENT_PUBTYPE_MAP)
         p.url = ''
+        apply_parent_search_hints(p)
 
     except Exception, e:
-        print 'Parent exception: ', e
+        warning('Parent exception: ', e)
+        p = Parent({})
 
     return p
 
 
+def apply_parent_search_hints(p):
+    #HACK to smooth out ambiguous search results
+    if trans.PARENT_SEARCH_HINTS and p.publication_type_identifier in trans.PARENT_SEARCH_HINTS and p.label in \
+            trans.PARENT_SEARCH_HINTS[p.publication_type_identifier]:
+
+        hint = trans.PARENT_SEARCH_HINTS[p.publication_type_identifier][p.label]
+        if isinstance(hint, tuple):
+            type, id = hint
+            p.publication_type_identifier = type
+        else:
+            id = hint
+            # type = p.publication_type_identifier
+
+        p.url = '/{type}/{id}'.format(type=p.publication_type_identifier, id=id)
+
+
 def populate_contributors(field):
+    contributor = Contributor({})
+
     s = field.split(',')
     name, rest = s[0], s[1:]
 
     name_split = name.split()
     first_name, last_name = name_split[0], name_split[-1]
-    org_name = rest[0] if len(rest) > 0 else None
+    org_name = rest[0].strip() if len(rest) > 0 else None
 
-    contributor = Contributor({}, hints=trans.CONTRIB_ROLES)
-    contributor.person = Person({'first_name': first_name, 'last_name': last_name})
-    contributor.organization = Organization({'name': org_name}, known_ids=trans.ORG_IDS)
+    #Horrifying
+    person_key = '{fn} {ln}'.format(fn=first_name, ln=last_name)
+    person = trans.PERSON_TRANSLATIONS[person_key] if person_key in trans.PERSON_TRANSLATIONS else Person({'first_name': first_name, 'last_name': last_name})
+    contributor.person = person
 
-    return contributor
+    try:
+        hint_org, hint_role = trans.CONTRIB_ROLES[person_key]
+        contributor.role = Role(hint_role)
 
+        if org_name:
+            try:
+                contributor.organization = Organization({
+                    'identifier': trans.ORG_IDS[org_name],
+                    'name': org_name
+                })
+            except KeyError:
+                warning('Missing Organization ID for ', org_name)
+        else:
+            print('Using hint for Organization: ' + hint_org)
+            contributor.organization = Organization({'identifier': hint_org})
+
+        return contributor
+
+    except KeyError:
+        warning('Missing role for ' + person_key)
+    except Exception, e:
+        warning('Contributor exception: ', e)
+        return contributor
 
 class SurveyClient:
     def __init__(self, url, token, local_download_dir=None):
@@ -141,7 +189,7 @@ class SurveyClient:
 
     def get_list(self):
         url = '{b}/metadata/list?token={t}'.format(b=self.base_url, t=self.token)
-        print url
+        print(url)
         return requests.get(url).json()
 
     def get_survey(self, fig_url, do_download=False):
@@ -151,6 +199,7 @@ class SurveyClient:
         tier2_json = survey_json[0]['t2'] if len(survey_json) > 0 and survey_json[0]['t2'] is not None else []
 
         f = None
+        datasets = []
 
         if 'figure' in tier1_json:
             figure_json = tier1_json['figure']
@@ -175,50 +224,59 @@ class SurveyClient:
                 if 'origination' in img_json and img_json['origination'] not in ('Original',) and 'publication' in img_json:
                     image_obj.parents.append(populate_parent(img_json['publication']))
                 elif 'origination' in img_json and img_json['origination'] == 'Original':
-                    image_obj.add_contributor(populate_contributors(img_json['original_agency']))
+                    cont = populate_contributors(img_json['original_agency'])
+                    image_obj.add_contributor(cont)
 
                 f.images.append(image_obj)
 
-        # # Recent decision: No default images
-        # elif 'figure' in tier1_json:
-        #     default_image = populate_image(tier1_json['figure'])
-        #     f.images.append(default_image)
-
         if 'datasets' in tier1_json:
-            datasets = [populate_dataset(ds) for ds in tier1_json['datasets']]
+            datasets = [populate_dataset(ds) for ds in tier1_json['datasets'] if ds]
 
             # Create activities
             activities = [populate_activity(m) for m in tier2_json['methods']] if tier2_json and 'methods' in tier2_json else []
+            if activities:
+                print('Found activities: ', activities)
 
             for ds, img_idxs in datasets:
                 # Associate datasets with images if we have images
                 if 'images' in tier1_json:
                     for idx in img_idxs:
-                        # Associate activities with datasets
-                        for act, img_name, ds_name in activities:
-                            if img_name == f.images[idx].title and ds_name == ds.name:
-                                ds.activity = act
                         try:
-                            f.images[idx].datasets.append(ds)
+                            p = Parent.from_obj(ds)
+                            apply_parent_search_hints(p)
+
+                            # Associate activities with parent dataset
+                            for act, img_name, ds_name in activities:
+                                if img_name == f.images[idx].title and ds_name == ds.name:
+                                    p.activity = act
+
+                            f.images[idx].add_parent(p)
                         except Exception, e:
-                            print 'Dataset / Image association exception: ', e
+                            warning('Dataset / Image association exception: ', e)
                 # Else associate the datasets with the figure
                 else:
-                    f.add_parent(Parent.from_obj(ds))
+                    try:
+                        p = Parent.from_obj(ds)
+                        apply_parent_search_hints(p)
 
-                    # Associate activities with datasets
-                    for act, img_name, ds_name in activities:
-                        if img_name == f.title and ds_name == ds.name:
-                            ds.activity = act
+                        # Associate activities with datasets
+                        for act, img_name, ds_name in activities:
+                            if parse_title(img_name)[1] == f.title and ds_name == ds.name:
+                                p.activity = act
 
+                        f.add_parent(p)
+                    except Exception, e:
+                        warning('Dataset / Figure association exception: ', e)
 
         if 'poc' in tier1_json:
-            f.add_contributor(populate_contributors(tier1_json['poc']))
+            cont = populate_contributors(tier1_json['poc'])
+            if cont:
+                f.add_contributor(cont)
 
         if do_download:
             self.download_figure(f)
 
-        return f
+        return f, datasets
 
     def download_figure(self, figure):
         url = '{b}/{path}?token={t}'.format(b=self.base_url, path=figure.remote_path, t=self.token)
@@ -235,3 +293,4 @@ class SurveyClient:
             raise Exception('Image not found: {u}'.format(u=url))
         else:
             raise Exception(resp.status_code)
+

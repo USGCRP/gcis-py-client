@@ -71,13 +71,19 @@ class GcisObject(Gcisbase):
         super(GcisObject, self).__init__(data, **kwargs)
 
     def add_contributor(self, contributor):
-        self.contributors.append(contributor)
+        if isinstance(contributor, Contributor):
+            self.contributors.append(contributor)
+        else:
+            raise TypeError('Expected Contributor, got {t}'.format(t=type(contributor)))
 
     def add_person(self, person):
         self.contributors.append(Contributor(person, Organization()))
 
     def add_parent(self, parent):
-        self.parents.append(parent)
+        if isinstance(parent, Parent):
+            self.parents.append(parent)
+        else:
+            raise TypeError('Expected Parent, got {t}'.format(t=type(parent)))
 
 
 class Figure(GcisObject):
@@ -203,14 +209,8 @@ class Image(GcisObject):
 
         super(Image, self).__init__(data, fields=self.gcis_fields, trans=trans)
 
-        #Hack
-        self.identifier = self.identifier.replace('/image/', '') if self.identifier else None
-
         self.local_path = local_path
         self.remote_path = remote_path
-
-        #This does not accurately reflect GCIS' data model
-        self.datasets = []
 
     @property
     def create_dt(self):
@@ -230,10 +230,10 @@ class Image(GcisObject):
 class Dataset(GcisObject):
     def __init__(self, data, trans=(), known_ids=None):
         self.gcis_fields = ['contributors', 'vertical_extent', 'native_id', 'href', 'references', 'cite_metadata',
-                        'scale', 'publication_year', 'temporal_extent', 'version', 'parents', 'scope', 'type',
-                        'processing_level', 'files', 'data_qualifier', 'access_dt', 'description', 'spatial_ref_sys',
-                        'spatial_res', 'spatial_extent', 'doi', 'name', 'url', 'uri', 'identifier', 'release_dt',
-                        'attributes']
+                            'scale', 'publication_year', 'temporal_extent', 'version', 'parents', 'scope', 'type',
+                            'processing_level', 'files', 'data_qualifier', 'access_dt', 'description',
+                            'spatial_ref_sys', 'spatial_res', 'spatial_extent', 'doi', 'name', 'url', 'uri',
+                            'identifier', 'release_dt', 'attributes']
 
         self._identifiers = known_ids
 
@@ -242,17 +242,9 @@ class Dataset(GcisObject):
         self._access_dt = None
         self._publication_year = None
 
-        #These do not accurately reflect GCIS' data model
-        self.note = None
-        self.activity = None
-
         super(Dataset, self).__init__(data, fields=self.gcis_fields, trans=trans)
 
-        self.identifier = self._identifiers[self.name] if self._identifiers and self.name in self._identifiers else self.name
-
-        #Hack to fix a particular kind of bad URL
-        if self.url and self.url.startswith('ttp://'):
-            self.url = self.url.replace('ttp://', 'http://')
+        self.identifier = self._identifiers[self.name] if self._identifiers and self.name in self._identifiers else None
 
     def __repr__(self):
         return '<Dataset: id:{id} name:{name}>'.format(id=self.identifier, name=self.name)
@@ -343,15 +335,10 @@ class Person(Gcisbase):
 
 
 class Organization(Gcisbase):
-    def __init__(self, data, trans=(), known_ids=None):
+    def __init__(self, data, trans=()):
         self.gcis_fields = ['organization_type_identifier', 'url', 'uri', 'href', 'country_code', 'identifier', 'name']
 
-        self._identifiers = known_ids
-
         super(Organization, self).__init__(data, fields=self.gcis_fields, trans=trans)
-
-        if not self.identifier:
-            self.identifier = self._identifiers[self.name] if self.name in self._identifiers else None
 
     def __repr__(self):
         return '<Organization: id:{id} name:{name}>'.format(id=self.identifier, name=self.name)
@@ -361,11 +348,8 @@ class Organization(Gcisbase):
 
 
 class Contributor(Gcisbase):
-    def __init__(self, data, hints=None):
+    def __init__(self, data):
         self.gcis_fields = ['role_type_identifier', 'organization_uri', 'uri', 'href', 'person_uri', 'person_id', 'id']
-
-        self.people_role_map = hints
-        self._role = None
 
         super(Contributor, self).__init__(data, fields=self.gcis_fields)
 
@@ -374,19 +358,10 @@ class Contributor(Gcisbase):
 
         self.person = Person(person_tree) if person_tree else None
         self.organization = Organization(org_tree) if org_tree else None
-
-    @property
-    def role(self):
-
-        #Hack hack hack
-        if self._role is None and self.person is not None:
-            horrible_key = ' '.join((self.person.first_name, self.person.last_name))
-            self._role = Role(self.people_role_map[horrible_key]) if horrible_key in self.people_role_map else None
-
-        return self._role
+        self.role = Role(self.role_type_identifier) if self.role_type_identifier else None
 
     def __repr__(self):
-        return '<Contributor: {p} {o} Role:{r}>'.format(p=self.person, o=self.organization, r=self.role)
+        return '<Contributor: Person:{p} Org:{o} Role:{r}>'.format(p=self.person, o=self.organization, r=self.role)
 
     def __str__(self):
         return self.__repr__()
@@ -404,32 +379,20 @@ class Role(object):
 
 
 class Parent(Gcisbase):
-    def __init__(self, data, trans=(), pubtype_map=None, search_hints=None):
+    def __init__(self, data, target_pub=None, trans=(), pubtype_map=None):
         self.gcis_fields = ['relationship', 'url', 'publication_type_identifier', 'label', 'activity_uri', 'note']
 
         self.publication_type_map = pubtype_map
 
-        self.search_hints = search_hints
         self._publication_type_identifier = None
 
+        self.activity = None
+
         super(Parent, self).__init__(data, fields=self.gcis_fields, trans=trans)
+        self.publication = target_pub
 
         #HACK: Set default relationship type
         self.relationship = self.relationship if self.relationship else 'prov:wasDerivedFrom'
-
-        #HACK to smooth out ambiguous search results
-        if self.search_hints and self.publication_type_identifier in self.search_hints and self.label in \
-                self.search_hints[self.publication_type_identifier]:
-
-            hint = self.search_hints[self.publication_type_identifier][self.label]
-            if isinstance(hint, tuple):
-                type, id = hint
-                self.publication_type_identifier = type
-            else:
-                id = hint
-                type = self.publication_type_identifier
-
-            self.url = '/{type}/{id}'.format(type=self.publication_type_identifier, id=id)
 
     @property
     def publication_type_identifier(self):
@@ -441,16 +404,25 @@ class Parent(Gcisbase):
             if self.publication_type_map and value in self.publication_type_map else value
 
     @staticmethod
-    def from_obj(gcis_obj):
+    def from_obj(gcis_obj, activity=None):
         gcis_obj_type = type(gcis_obj).__name__.lower()
-        label = gcis_obj.title if hasattr(gcis_obj, 'title') else '***MISSING***'
 
-        return Parent({
+        if hasattr(gcis_obj, 'title'):
+            label = gcis_obj.title
+        elif hasattr(gcis_obj, 'name'):
+            label = gcis_obj.name
+        else:
+            label = '***MISSING***'
+
+        p = Parent({
             'relationship': 'prov:wasDerivedFrom',
             'publication_type_identifier': gcis_obj_type,
-            'url': '/{type}/{id}'.format(type=gcis_obj_type, id=gcis_obj.identifier),
+            'url': '/{type}/{id}'.format(type=gcis_obj_type, id=gcis_obj.identifier) if gcis_obj_type and gcis_obj.identifier else None,
             'label': label
-        })
+        }, target_pub=gcis_obj)
+        p.activity = activity
+
+        return p
 
     def __repr__(self):
         return '<Parent: rel:{rel} pub_type:{type} url:{url} label:{lbl}>'.format(
