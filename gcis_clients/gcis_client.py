@@ -6,7 +6,7 @@ import requests
 import yaml
 import getpass
 
-from domain import Figure, Image, Dataset, Activity, Person, Organization
+from domain import Figure, Image, Dataset, Activity, Person, Organization, Article, Webpage, Report
 
 
 def check_image(fn):
@@ -99,6 +99,10 @@ class GcisClient(object):
         if username is None or api_key is None:
             username, api_key = get_credentials(self.base_url)
 
+        #Squash trailing slash in base_url, if given
+        if self.base_url.endswith('/'):
+            self.base_url = self.base_url[:-1]
+
         self.s = requests.Session()
         self.s.auth = (username, api_key)
         self.s.headers.update({'Accept': 'application/json'})
@@ -188,7 +192,7 @@ class GcisClient(object):
     def create_image(self, image, report_id=None, figure_id=None):
         url = '{b}/image/'.format(b=self.base_url)
         resp = self.s.post(url, data=image.as_json(), verify=False)
-        print image.as_json()
+
         if resp.status_code != 200:
             return resp
         
@@ -316,12 +320,14 @@ class GcisClient(object):
         resp = self.s.get(url, verify=False)
         return resp.status_code, resp.text
 
-    @http_resp
     def get_report(self, report_id):
         url = '{b}/report/{id}'.format(b=self.base_url, id=report_id)
         resp = self.s.get(url, verify=False)
 
-        return resp.json()
+        try:
+            return Report(resp.json())
+        except ValueError:
+            raise Exception(resp.text)
 
     @exists
     def report_exists(self, report_id):
@@ -506,6 +512,62 @@ class GcisClient(object):
         return self.s.delete(url, verify=False)
 
     @exists
+    def article_exists(self, article_id):
+        url = '{b}/article/{aid}'.format(b=self.base_url, aid=article_id)
+        return self.s.head(url, verify=False)
+
+    def get_article(self, article_id):
+        url = '{b}/article/{aid}'.format(b=self.base_url, aid=article_id)
+        resp = self.s.get(url, verify=False)
+        try:
+            return Article(resp.json())
+        except ValueError:
+            raise Exception(resp.text)
+
+    @http_resp
+    def create_article(self, article):
+        url = '{b}/article/'.format(b=self.base_url)
+        return self.s.post(url, data=article.as_json(), verify=False)
+
+    @http_resp
+    def update_article(self, article):
+        url = '{b}/article/{aid}'.format(b=self.base_url, aid=article.identifier)
+        return self.s.post(url, data=article.as_json(), verify=False)
+
+    @http_resp
+    def delete_article(self, article):
+        url = '{b}/article/{aid}'.format(b=self.base_url, aid=article.identifier)
+        return self.s.delete(url, verify=False)
+
+    @exists
+    def webpage_exists(self, webpage_id):
+        url = '{b}/webpage/{id}'.format(b=self.base_url, id=webpage_id)
+        return self.s.head(url, verify=False)
+
+    def get_webpage(self, webpage_id):
+        url = '{b}/webpage/{id}'.format(b=self.base_url, id=webpage_id)
+        resp = self.s.get(url, verify=False)
+        try:
+            return Webpage(resp.json())
+        except ValueError:
+            raise Exception(resp.text)
+
+    @http_resp
+    def create_webpage(self, webpage):
+        url = '{b}/webpage/'.format(b=self.base_url)
+        return self.s.post(url, data=webpage.as_json(), verify=False)
+
+    @http_resp
+    def update_webpage(self, webpage):
+        url = '{b}/webpage/{aid}'.format(b=self.base_url, aid=webpage.identifier)
+        return self.s.post(url, data=webpage.as_json(), verify=False)
+
+    @http_resp
+    def delete_webpage(self, webpage):
+        url = '{b}/webpage/{aid}'.format(b=self.base_url, aid=webpage.identifier)
+        return self.s.delete(url, verify=False)
+
+    @exists
     def organization_exists(self, org_id):
         url = '{b}/organization/{org_id)'.format(b=self.base_url, org_id=org_id)
         return self.s.head(url, verify=False)
@@ -681,4 +743,7 @@ class GcisClient(object):
             return [re.match(r'\[.+\] \{(.+)\} (.*)', r).groups() for r in resp.json()]
             # return resp.json()
         else:
-            raise Exception(resp.text)
+            raise Exception('Lookup failed:\nQuery:{q}\nType:{t}\nResponse:\n{r}'.format(q=name, t=pub_type, r=resp.text))
+
+
+

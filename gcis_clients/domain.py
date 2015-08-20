@@ -235,6 +235,7 @@ class Dataset(GcisObject):
                             'spatial_ref_sys', 'spatial_res', 'spatial_extent', 'doi', 'name', 'url', 'uri',
                             'identifier', 'release_dt', 'attributes']
 
+        #TODO: This hack has got to go.
         self._identifiers = known_ids
 
         #Private attributes for handling date parsing
@@ -244,7 +245,7 @@ class Dataset(GcisObject):
 
         super(Dataset, self).__init__(data, fields=self.gcis_fields, trans=trans)
 
-        self.identifier = self._identifiers[self.name] if self._identifiers and self.name in self._identifiers else None
+        self.identifier = self._identifiers[self.name] if self._identifiers and self.name in self._identifiers else self.identifier
 
     def __repr__(self):
         return '<Dataset: id:{id} name:{name}>'.format(id=self.identifier, name=self.name)
@@ -428,6 +429,41 @@ class Parent(Gcisbase):
         return '<Parent: rel:{rel} pub_type:{type} url:{url} label:{lbl}>'.format(
             rel=self.relationship, type=self.publication_type_identifier, url=self.url, lbl=self.label
         )
+
+    def __str__(self):
+        return self.__repr__()
+
+
+class Article(Gcisbase):
+    def __init__(self, data, trans=()):
+        self.gcis_fields = ['files', 'doi', 'contributors', 'title', 'url', 'notes', 'uri',
+                            'journal_identifier', 'journal_pages', 'cited_by', 'href', 'parents', 'year',
+                            'journal_vol', 'references', 'identifier']
+
+        super(Article, self).__init__(data, fields=self.gcis_fields, trans=trans)
+
+    def as_json(self, indent=0, omit_fields=('files', 'parents', 'contributors', 'references', 'cited_by')):
+        return super(Article, self).as_json(omit_fields=omit_fields)
+
+    def __repr__(self):
+        return '<Article: id:{id} title:{t}>'.format(id=self.identifier, t=self.title)
+
+    def __str__(self):
+        return self.__repr__()
+
+
+class Webpage(Gcisbase):
+    def __init__(self, data, trans=()):
+        self.gcis_fields = ['files', 'contributors', 'title', 'url', 'uri', 'cited_by', 'href', 'references',
+                            'parents', 'access_date', 'identifier']
+
+        super(Webpage, self).__init__(data, fields=self.gcis_fields, trans=trans)
+
+    def as_json(self, indent=0, omit_fields=('files', 'parents', 'contributors', 'references', 'cited_by')):
+        return super(Webpage, self).as_json(omit_fields=omit_fields)
+
+    def __repr__(self):
+        return '<Webpage id:{id} title:{t}>'.format(id=self.identifier, t=self.title)
 
     def __str__(self):
         return self.__repr__()
