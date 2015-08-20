@@ -100,7 +100,7 @@ def populate_activity(mthd_json):
     except Exception, e:
         warning('Activity exception: ', e)
 
-    return act, mthd_json['image_name'], mthd_json['dataset']
+    return act, mthd_json['image_name'], mthd_json['dataset'].strip() if mthd_json['dataset'] else None
 
 
 def populate_parent(pub_json):

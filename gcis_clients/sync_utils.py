@@ -1,6 +1,10 @@
+from __future__ import print_function
 __author__ = 'abuddenberg'
 from os.path import exists
+import sys
 
+def warning(*objs):
+    print("WARNING: ", *objs, file=sys.stderr)
 
 #This function is for adding images to existing figures
 def move_images_to_gcis(webform_client, gcis_client, webform_url, gcis_id, report_id, subset_images=None):
@@ -19,7 +23,7 @@ def move_images_to_gcis(webform_client, gcis_client, webform_url, gcis_id, repor
             raise Exception('Local file missing ' + image.local_path)
 
         if not gcis_client.image_exists(image.identifier):
-            print 'Creating image: {img}'.format(img=image.identifier)
+            print('Creating image: {img}'.format(img=image.identifier))
             gcis_client.create_image(image, report_id=report_id, figure_id=figure.identifier)
 
 
@@ -34,32 +38,28 @@ def realize_contributors(gcis_client, contributors):
         person = cont.person
         org = cont.organization
 
-        #Hack for F. Chapin
-        if '.' in person.first_name:
-            person.first_name = ''
-
         name_matches = gcis_client.lookup_person(person.first_name + ' ' + person.last_name)
         if len(name_matches) == 1:
             person.id = name_matches[0][0]
         elif len(name_matches) == 0:
-            print '\t', 'No ID found for ' + person.first_name + ' ' + person.last_name
+            warning('No ID found for ' + person.first_name + ' ' + person.last_name)
         else:
-            print '\t', 'Ambiguous results for ' + person.first_name + ' ' + person.last_name
-            print '\t\t', name_matches
+            warning('Ambiguous results for ' + person.first_name + ' ' + person.last_name)
+            warning(name_matches)
 
-        if org.identifier in (None, '') and org.name not in (None, ''):
-            print 'No ID found for ' + org.name
+        if org and org.identifier in (None, '') and org.name not in (None, ''):
+            warning('No ID found for ' + org.name)
 
     #Check if we missed any organizations in our hardcoding...
-    if not all(map(lambda c: c.organization.identifier is not None, contributors)):
-        print 'Missing organizations: ', contributors
+    if not all(map(lambda c: c.organization is None or c.organization.identifier is not None, contributors)):
+        warning('Missing organizations: ', contributors)
 
 
 def realize_parents(gcis_client, parents):
     for parent in parents:
         # print parent.publication_type_identifier, parent.label
         if parent.url:
-            print '\t', ' '.join(('Using hint for', parent.publication_type_identifier, parent.label))
+            print(' '.join(('Using hint for', parent.publication_type_identifier, parent.label)))
             continue
 
         parent_matches = gcis_client.lookup_publication(parent.publication_type_identifier, parent.label)
@@ -67,7 +67,7 @@ def realize_parents(gcis_client, parents):
         if len(parent_matches) == 1:
             parent.url = '/{type}/{id}'.format(type=parent.publication_type_identifier, id=parent_matches[0][0])
         elif len(parent_matches) == 0:
-            print '\t', ' '.join(('No ID found for', parent.publication_type_identifier, parent.label))
+            warning(' '.join(('No ID found for', parent.publication_type_identifier, parent.label)))
         else:
-            print '\t', ' '.join(('Ambiguous results for', parent.publication_type_identifier, parent.label))
-            print '\t\t', parent_matches
+            warning(' '.join(('Ambiguous results for', parent.publication_type_identifier, parent.label)))
+            warning(parent_matches)
