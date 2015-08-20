@@ -6,7 +6,7 @@ import requests
 import yaml
 import getpass
 
-from domain import Figure, Image, Dataset, Activity, Person, Organization
+from domain import Figure, Image, Dataset, Activity, Person, Organization, Article, Webpage, Report
 
 
 def check_image(fn):
@@ -14,7 +14,7 @@ def check_image(fn):
         # if len(args) < 1 or not isinstance(args[0], Image):
         #     raise Exception('Invalid Image')
         if args[1].identifier in (None, ''):
-            raise Exception('Invalid identifier', args[0].identifier)
+            raise Exception('Invalid identifier', args[1].identifier)
         return fn(*args, **kwargs)
 
     return wrapped
@@ -93,12 +93,15 @@ class GcisClient(object):
             username, api_key = args[1:3]
         #User provides none or inconsistent args
         else:
-            print 'Using http://data.globalchange.gov'
             self.base_url = 'http://data.globalchange.gov'
 
         #If credentials were not provided, obtain them 
         if username is None or api_key is None:
             username, api_key = get_credentials(self.base_url)
+
+        #Squash trailing slash in base_url, if given
+        if self.base_url.endswith('/'):
+            self.base_url = self.base_url[:-1]
 
         self.s = requests.Session()
         self.s.auth = (username, api_key)
@@ -118,14 +121,25 @@ class GcisClient(object):
         )
 
         resp = self.s.post(url, data=figure.as_json(), verify=False)
+        if resp.status_code != 200:
+            return resp
+
+        if figure.local_path is not None:
+            self.upload_figure_file(report_id, chapter_id, figure.identifier, figure.local_path)
 
         if skip_images is False:
             for image in figure.images:
                 self.create_image(image),
                 self.associate_image_with_figure(image.identifier, report_id, figure.identifier)
 
+        for c in figure.contributors:
+            self.associate_contributor_with_figure(c, report_id, chapter_id, figure.identifier)
+
         for p in figure.parents:
-            self.associate_figure_with_parent(report_id, figure.identifier, p)
+            if p.activity:
+                self.create_or_update_activity(p.activity)
+            activity_id = p.activity.identifier if p.activity else None
+            self.associate_figure_with_parent(report_id, figure.identifier, p, activity_id=activity_id)
 
         return resp
 
@@ -152,7 +166,10 @@ class GcisClient(object):
             self.associate_contributor_with_figure(c, report_id, chapter_id, figure.identifier)
 
         for p in figure.parents:
-            self.associate_figure_with_parent(report_id, figure.identifier, p)
+            if p.activity:
+                self.create_or_update_activity(p.activity)
+            activity_id = p.activity.identifier if p.activity else None
+            self.associate_figure_with_parent(report_id, figure.identifier, p, activity_id=activity_id)
 
         return resp
 
@@ -161,35 +178,55 @@ class GcisClient(object):
         url = '{b}/report/{rpt}/figure/{fig}'.format(b=self.base_url, rpt=report_id, fig=figure_id)
         return self.s.delete(url, verify=False)
 
+    @http_resp
+    def upload_figure_file(self, report_id, chapter_id, figure_id, local_path):
+        url = '{b}/report/{rpt}/chapter/{chp}/figure/files/{id}/{fn}'.format(b=self.base_url, rpt=report_id, chp=chapter_id, id=figure_id, fn=basename(local_path))
+        # For future multi-part encoding support
+        # return self.s.put(url, headers=headers, files={'file': (filename, open(filepath, 'rb'))})
+        if not os.path.exists(local_path):
+            raise Exception('File not found: ' + local_path)
+
+        return self.s.put(url, data=open(local_path, 'rb'), verify=False)
+
     @check_image
     def create_image(self, image, report_id=None, figure_id=None):
         url = '{b}/image/'.format(b=self.base_url)
         resp = self.s.post(url, data=image.as_json(), verify=False)
+
+        if resp.status_code != 200:
+            return resp
         
         if image.local_path is not None:
             self.upload_image_file(image.identifier, image.local_path)
         if figure_id and report_id:
             self.associate_image_with_figure(image.identifier, report_id, figure_id)
-        for dataset in image.datasets:
-            if not self.dataset_exists(dataset.identifier):
-                self.create_dataset(dataset)
-            # if not self.activity_exists(dataset.activity.identifier):
-            #     self.create_activity(dataset.activity))
-            self.create_or_update_activity(dataset.activity)
-            self.associate_dataset_with_image(dataset.identifier, image.identifier,
-                                              activity_id=dataset.activity.identifier)
+        # for dataset in image.datasets:
+        #     if not self.dataset_exists(dataset.identifier):
+        #         self.create_dataset(dataset)
+        #     # if not self.activity_exists(dataset.activity.identifier):
+        #     #     self.create_activity(dataset.activity))
+        #     self.create_or_update_activity(dataset.activity)
+        #     self.associate_image_with_parent(dataset.identifier, image.identifier,
+        #                                       activity_id=dataset.activity.identifier)
+        for p in image.parents:
+            if p.activity:
+                self.create_or_update_activity(p.activity)
+
+            activity_id = p.activity.identifier if p.activity else None
+            self.associate_image_with_parent(image.identifier, p, activity_id=activity_id)
         return resp
 
     @check_image
     def update_image(self, image, old_id=None):
         url = '{b}/image/{img}'.format(b=self.base_url, img=old_id or image.identifier)
-        for dataset in image.datasets:
-            # self.update_activity(dataset.activity)
-            self.create_or_update_activity(dataset.activity)
-            self.associate_dataset_with_image(dataset.identifier, image.identifier,
-                                              activity_id=dataset.activity.identifier)
         for c in image.contributors:
             self.associate_contributor_with_image(c, image.identifier)
+
+        for p in image.parents:
+            if p.activity:
+                self.create_or_update_activity(p.activity)
+            activity_id = p.activity.identifier if p.activity else None
+            self.associate_image_with_parent(image.identifier, p, activity_id=activity_id)
 
         return self.s.post(url, data=image.as_json(), verify=False)
 
@@ -283,12 +320,14 @@ class GcisClient(object):
         resp = self.s.get(url, verify=False)
         return resp.status_code, resp.text
 
-    @http_resp
     def get_report(self, report_id):
         url = '{b}/report/{id}'.format(b=self.base_url, id=report_id)
         resp = self.s.get(url, verify=False)
 
-        return resp.json()
+        try:
+            return Report(resp.json())
+        except ValueError:
+            raise Exception(resp.text)
 
     @exists
     def report_exists(self, report_id):
@@ -384,45 +423,6 @@ class GcisClient(object):
         url = '{b}/dataset/'.format(b=self.base_url)
         return self.s.get(url, params={'all': 1}, verify=False)
 
-    def associate_dataset_with_image(self, dataset_id, image_id, activity_id=None):
-        url = '{b}/image/prov/{img}'.format(b=self.base_url, img=image_id)
-
-        data = {
-            'parent_uri': '/dataset/' + dataset_id,
-            'parent_rel': 'prov:wasDerivedFrom'
-        }
-        if activity_id:
-            data['activity'] = activity_id
-
-        try:
-            self.delete_dataset_image_assoc(dataset_id, image_id)
-        except AssociationException as e:
-            print e.value
-
-        resp = self.s.post(url, data=json.dumps(data), verify=False)
-
-        if resp.status_code == 200:
-            return resp
-        else:
-            raise Exception('Dataset association failed:\n{url}\n{resp}'.format(url=url, resp=resp.text))
-
-    def delete_dataset_image_assoc(self, dataset_id, image_id):
-        url = '{b}/image/prov/{img}'.format(b=self.base_url, img=image_id)
-
-        data = {
-            'delete': {
-                'parent_uri': '/dataset/' + dataset_id,
-                'parent_rel': 'prov:wasDerivedFrom'
-            }
-        }
-        resp = self.s.post(url, data=json.dumps(data), verify=False)
-
-        if resp.status_code == 200:
-            return resp
-        else:
-            raise AssociationException(
-                'Dataset dissociation failed:\n{url}\n{resp}\n{d}'.format(url=url, resp=resp.text, d=data))
-
     def create_or_update_dataset(self, dataset):
         if self.dataset_exists(dataset.identifier):
             print 'Updating dataset: ' + dataset.identifier
@@ -512,6 +512,62 @@ class GcisClient(object):
         return self.s.delete(url, verify=False)
 
     @exists
+    def article_exists(self, article_id):
+        url = '{b}/article/{aid}'.format(b=self.base_url, aid=article_id)
+        return self.s.head(url, verify=False)
+
+    def get_article(self, article_id):
+        url = '{b}/article/{aid}'.format(b=self.base_url, aid=article_id)
+        resp = self.s.get(url, verify=False)
+        try:
+            return Article(resp.json())
+        except ValueError:
+            raise Exception(resp.text)
+
+    @http_resp
+    def create_article(self, article):
+        url = '{b}/article/'.format(b=self.base_url)
+        return self.s.post(url, data=article.as_json(), verify=False)
+
+    @http_resp
+    def update_article(self, article):
+        url = '{b}/article/{aid}'.format(b=self.base_url, aid=article.identifier)
+        return self.s.post(url, data=article.as_json(), verify=False)
+
+    @http_resp
+    def delete_article(self, article):
+        url = '{b}/article/{aid}'.format(b=self.base_url, aid=article.identifier)
+        return self.s.delete(url, verify=False)
+
+    @exists
+    def webpage_exists(self, webpage_id):
+        url = '{b}/webpage/{id}'.format(b=self.base_url, id=webpage_id)
+        return self.s.head(url, verify=False)
+
+    def get_webpage(self, webpage_id):
+        url = '{b}/webpage/{id}'.format(b=self.base_url, id=webpage_id)
+        resp = self.s.get(url, verify=False)
+        try:
+            return Webpage(resp.json())
+        except ValueError:
+            raise Exception(resp.text)
+
+    @http_resp
+    def create_webpage(self, webpage):
+        url = '{b}/webpage/'.format(b=self.base_url)
+        return self.s.post(url, data=webpage.as_json(), verify=False)
+
+    @http_resp
+    def update_webpage(self, webpage):
+        url = '{b}/webpage/{aid}'.format(b=self.base_url, aid=webpage.identifier)
+        return self.s.post(url, data=webpage.as_json(), verify=False)
+
+    @http_resp
+    def delete_webpage(self, webpage):
+        url = '{b}/webpage/{aid}'.format(b=self.base_url, aid=webpage.identifier)
+        return self.s.delete(url, verify=False)
+
+    @exists
     def organization_exists(self, org_id):
         url = '{b}/organization/{org_id)'.format(b=self.base_url, org_id=org_id)
         return self.s.head(url, verify=False)
@@ -553,9 +609,13 @@ class GcisClient(object):
     def associate_contributor_with_figure(self, contrib, report_id, chapter_id, figure_id):
         url = '{b}/report/{rpt}/chapter/{chp}/figure/contributors/{fig}'.format(b=self.base_url, rpt=report_id, chp=chapter_id, fig=figure_id)
 
-        data = {
-            'role': contrib.role.type_id,
-        }
+        try:
+            data = {
+                'role': contrib.role.type_id,
+            }
+        except AttributeError as e:
+            print 'Contributor {c} missing role'.format(c=contrib)
+            raise e
 
         if contrib.person is not None and contrib.person.id is not None:
             data['person_id'] = contrib.person.id
@@ -604,24 +664,62 @@ class GcisClient(object):
         return self.s.post(url, data=json.dumps(data), verify=False)
 
     @http_resp
-    def associate_figure_with_parent(self, report_id, figure_id, parent):
+    def associate_figure_with_parent(self, report_id, figure_id, parent, activity_id=None):
         url = '{b}/report/{rpt}/figure/prov/{fig}'.format(b=self.base_url, rpt=report_id, fig=figure_id)
 
         data = {
             'parent_uri': parent.url,
             'parent_rel': parent.relationship
         }
+        if activity_id:
+            data['activity'] = activity_id
 
         try:
-            self.delete_figure_pub_assoc(report_id, figure_id, parent)
+            self.delete_figure_parent_assoc(report_id, figure_id, parent)
         except AssociationException as e:
             print e.value
 
         resp = self.s.post(url, data=json.dumps(data), verify=False)
         return resp
 
-    def delete_figure_pub_assoc(self, report_id, figure_id, parent):
+    def delete_figure_parent_assoc(self, report_id, figure_id, parent):
         url = '{b}/report/{rpt}/figure/prov/{fig}'.format(b=self.base_url, rpt=report_id, fig=figure_id)
+
+        data = {
+            'delete': {
+                'parent_uri': parent.url,
+                'parent_rel': parent.relationship
+            }
+        }
+        resp = self.s.post(url, data=json.dumps(data), verify=False)
+
+        if resp.status_code == 200:
+            return resp
+        else:
+            raise AssociationException(
+                'Parent dissociation failed:\n{url}\n{resp}\n{d}'.format(url=url, resp=resp.text, d=data))
+
+    @http_resp
+    def associate_image_with_parent(self, image_id, parent, activity_id=None):
+        url = '{b}/image/prov/{img}'.format(b=self.base_url, img=image_id)
+
+        data = {
+            'parent_uri': parent.url,
+            'parent_rel': parent.relationship
+        }
+        if activity_id:
+            data['activity'] = activity_id
+
+        try:
+            self.delete_dataset_image_assoc(image_id, parent)
+        except AssociationException as e:
+            print e.value
+
+        resp = self.s.post(url, data=json.dumps(data), verify=False)
+        return resp
+
+    def delete_dataset_image_assoc(self, image_id, parent):
+        url = '{b}/image/prov/{img}'.format(b=self.base_url, img=image_id)
 
         data = {
             'delete': {
@@ -645,4 +743,7 @@ class GcisClient(object):
             return [re.match(r'\[.+\] \{(.+)\} (.*)', r).groups() for r in resp.json()]
             # return resp.json()
         else:
-            raise Exception(resp.text)
+            raise Exception('Lookup failed:\nQuery:{q}\nType:{t}\nResponse:\n{r}'.format(q=name, t=pub_type, r=resp.text))
+
+
+

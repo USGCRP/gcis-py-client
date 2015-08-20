@@ -37,6 +37,50 @@ DATASET_TRANSLATIONS = {
     'data_set_variables': 'attributes'
 }
 
+DATASET_IDS = {
+    'Global Historical Climatology Network - Daily': 'nca3-ghcn-daily-r201305',
+    'Global Historical Climatology Network - Monthly': 'nca3-ghcn-monthly-r201305',
+    'NCDC Merged Land and Ocean Surface Temperature': 'nca3-mlost',
+    'NOAA Merged Land-Ocean Surface Temperature Analysis (MLOST)': 'nca3-mlost',
+    'U.S. Climate Divisional Dataset Version 2': 'nca3-cddv2-r1',
+    'Climate Division Database Version 2': 'nca3-cddv2-r1',
+    'Eighth degree-CONUS Daily Downscaled Climate Projections by Katharine Hayhoe': 'nca3-cmip3-downscaled-r201304',
+    'Eighth degree-CONUS Daily Downscaled Climate Projections': 'nca3-cmip3-downscaled-r201304',
+    'Earth Policy Institute Atmospheric Carbon Dioxide Concentration, 1000-2012': 'nca3-epi-co2-r201307',
+    'Daily 1/8-degree gridded meteorological data [1 Jan 1949 - 31 Dec 2010]': 'nca3-maurer-r201304',
+    'NCEP/NCAR Reanalysis': 'nca3-ncep-ncar-r1',
+    'NCDC Global Surface Temperature Anomalies': 'nca3-ncdc-gst-anomalies-r201307',
+    'GRACE Static Field Geopotential Coefficients JPL Release 5.0 GSM': 'nca3-grace-r201307',
+    'UW/NCDC Satellite Derived Hurricane Intensity Dataset': 'nca3-hursat-r1',
+    'Bias-Corrected and Spatially Downscaled Surface Water Projections Hydrologic Data': 'nca3-water-projections-r201208',
+    'International Best Track Archive for Climate Stewardship (IBTrACS)': 'nca3-ibtracs-r201311',
+    'the World Climate Research Programme\'s (WCRP\'s) Coupled Model Intercomparison Project phase 3 (CMIP3) multi-model dataset': 'nca3-cmip3-r201205',
+    'World Climate Research Programme\'s (WCRP\'s) Coupled Model Intercomparison Project phase 3 (CMIP3) multi-model dataset': 'nca3-cmip3-r201205',
+    'World Climate Research Program\'s (WCRP\'s) Coupled Model Intercomparison Project phase 3 (CMIP3) multi-model dataset': 'nca3-cmip3-r201205',
+    'North American Regional Climate Change Assessment Program dataset': 'nca3-narccap-r201205',
+    'Gridded Population of the World Version 3 (GPWv3): Population Count Grid': 'nca3-gpwv3-r201211',
+    'ETCCDI Extremes Indices Archive': 'nca3-etccdi-r201305',
+    'Historical Climatology Network Monthly (USHCN) Version 2.5': 'nca3-ushcn',
+    'Annual Maximum Ice Coverage (AMIC)': 'nca3-amic-r201308',
+    'Global Historical Climatology Network-Daily (GHCN-D) Monthly Summaries: North American subset': 'nca3-ghcnd-monthly-summaries-r201401',
+    'Global Sea Level From TOPEX & Jason Altimetry': 'nca3-topex-jason-altimetry-r1',
+    'World Climate Research Program\'s (WCRP\'s) Coupled Model Intercomparison Project phase 5 (CMIP5) multi-model ensemble': 'nca3-cmip5-r1',
+    'Global CO2 Emissions from Fossil-Fuel Burning, Cement Manufacture, and Gas Flaring: 1751-2009': 'nca3-doe-co2-r201209',
+    'Proxy-based reconstructions of hemispheric and global surface temperature variations over the past two millennia': 'nca3-mann-recons-r200809',
+    'EPICA Dome C Ice Core 800KYr Carbon Dioxide Data': 'nca3-epica-ice-core-r20080515',
+    'Western U.S. Percent Area Moderately to Extremely Dry and Moderately to Extremely Wet': 'nca3-western-us-wet-dry-r2012',
+    'Total Wildland Fires and Acres (1960-2009)': 'nca3-wildland-fires-r1',
+    'HadCRUT4': 'nca3-hadcrut4-v4_1_1_0',
+    'GISS Surface Temperature Analysis (GISTEMP)': 'nca3-gistemp-r2010',
+    'Solar Constant': 'nca3-solar-constant-r20131003',
+
+    #Surely we can do better
+    'Proxy Data': 'nca3-proxy-data-r1',
+    'Tide Gauge Data': 'nca3-tide-gauge-data-r1',
+    'Projected Sea Level Rise': 'nca3-projected-sea-level-rise-r1',
+    }
+
+
 ACT_TRANSLATIONS = {
     'how_much_time_was_invested_in_creating_the_image': 'duration',
     '35_what_are_all_of_the_files_names_and_extensions_associated_with_this_image': 'output_artifacts',

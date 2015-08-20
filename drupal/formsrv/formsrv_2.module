@@ -85,6 +85,7 @@ function formsrv_2_figure_metadata_json($image_nid_query = ''){
           n.nid,
           ci.field_metadata_t1_value as t1,
           ci.field_metadata_t2_value as t2,
+          ci.field_cr_permission_status_value as copyright,
           f.filepath
         FROM {node} n
           JOIN {content_type_chapter_image} ci ON n.nid = ci.nid AND n.vid = ci.vid
@@ -98,6 +99,7 @@ END;
     while($row = $result->fetch_assoc()){
         $list[] = array(
             'nid' => $row['nid'],
+            'copyright' => $row['copyright'],
             't1' => json_decode($row['t1']),
             't2' => json_decode($row['t2']),
             'filepath' => $row['filepath']

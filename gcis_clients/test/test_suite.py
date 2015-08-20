@@ -32,7 +32,6 @@ def test_gcis_client_init_modes(monkeypatch, capsys):
     gcis = GcisClient()
 
     out, err = capsys.readouterr()
-    assert out == 'Using http://data.globalchange.gov\n'
     assert gcis.base_url == 'http://data.globalchange.gov'
     assert gcis.s.auth == (test_user, test_apikey)
 
