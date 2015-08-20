@@ -293,7 +293,7 @@ class Dataset(GcisObject):
 
     @publication_year.setter
     def publication_year(self, value):
-        match = re.search('\d{4}', value) if value else None
+        match = re.search('\d{4}', str(value)) if value else None
         if match:
             self._publication_year = match.group()
         else:

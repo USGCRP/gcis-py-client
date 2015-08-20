@@ -93,3 +93,27 @@ Let's see about the images:
 How about the whole Image?:
 
     print gcis.get_image('69da6d93-4426-4061-a2a1-7b3d01f2dc1c').as_json(indent=4)
+
+Want to find the lineage of a publication?
+
+    fig2_1 = gcis.get_figure('nca3', 'ten-indicators-of-a-warming-world')
+    print fig2_1.parents
+
+Add a parent to a figure directly...
+
+    cmip3 = gcis.get_dataset('nca3-cmip3-r201205')
+    gcis.associate_figure_with_parent('nca3', 'ten-indicators-of-a-warming-world', Parent.from_obj(cmip3))
+
+...or as part of an update
+
+    fig2_1.add_parent(Parent.from_obj(cmip3))
+    gcis.update_figure('nca3', 'our-changing-climate', fig2_1)
+    
+**NOTE:** GcisClient will disassociate and then reassociate Parents as part of an update. Adding a new Parent during an 
+update will cause "Parent dissociation failed" messages to appear--these can be safely ignored.
+ 
+**ALSO:** Updates do NOT, presently, remove parents you have not included on the Figure object.
+
+Remove a parent from a figure
+
+    gcis.delete_figure_parent_assoc('nca3', 'ten-indicators-of-a-warming-world', Parent.from_obj(cmip3))

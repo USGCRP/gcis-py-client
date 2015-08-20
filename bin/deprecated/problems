@@ -170,4 +170,6 @@ def sort_webform_list(report_id):
 
 
 if __name__ == '__main__':
-    main()
+    print 'The problems script is no longer maintained (and was a bad idea in the first place).'
+    # Think really hard about uncommenting this, then don't.
+    # main()
