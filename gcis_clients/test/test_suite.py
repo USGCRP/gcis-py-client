@@ -9,7 +9,7 @@ import json
 import pytest
 
 from test_data import test_figure_json, test_image_json, webform_json_precip, test_dataset_json
-from gcis_clients.domain import Gcisbase, Figure, Image, Dataset, Chapter, Contributor
+from gcis_clients.domain import Gcisbase, Figure, Image, Dataset, Chapter, Contributor, Parent
 from gcis_clients import GcisClient
 import __builtin__
 from os import getenv
@@ -51,6 +51,10 @@ def test_gcis_client_init_modes(monkeypatch, capsys):
     gcis = GcisClient('http://data.globalchange.gov', test_user, test_apikey)
     assert gcis.base_url == 'http://data.globalchange.gov'
     assert gcis.s.auth == (test_user, test_apikey)
+
+    #Test trailing slash in base URL
+    gcis = GcisClient('http://data.globalchange.gov/', test_user, test_apikey)
+    assert gcis.base_url == 'http://data.globalchange.gov'
 
 
 def test_get_credentials_modes(monkeypatch):
@@ -168,10 +172,33 @@ def test_dataset_special_properties():
     ds_json_out = json.loads(ds.as_json())
     assert ds_json_out['access_dt'] == '2011-12-31T00:00:00'
 
+    #Make sure identifier doesn't get nulled out if we don't specify known_ids
+    assert ds.identifier == 'cddv2'
+
 
 # def test_contributors():
 #     f = Figure(json.loads(test_figure_json))
 #     contribs = f.contributors
+
+
+def test_parent():
+    f = Figure(json.loads(test_figure_json))
+    assert f.parents == []
+
+    ds = Dataset(json.loads(test_dataset_json))
+    assert isinstance(ds, Dataset)
+
+    p = Parent.from_obj(ds)
+    assert isinstance(p, Parent)
+    assert isinstance(p.publication, Dataset)
+
+    f.add_parent(p)
+    assert len(f.parents) == 1
+    assert f.parents[0] == p
+    assert f.parents[0].relationship == 'prov:wasDerivedFrom'
+    assert f.parents[0].publication_type_identifier == 'dataset'
+    assert f.parents[0].url == '/dataset/cddv2'
+    assert f.parents[0].label == 'Climate Division Database Version 2'
 
 
 
