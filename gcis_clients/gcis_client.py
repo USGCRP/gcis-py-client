@@ -59,7 +59,7 @@ def get_credentials(url):
         all_creds = yaml.load(open(gcis_config, 'r'))
         instance_creds = [c for c in all_creds if c['url'] == url][0]
 
-        return instance_creds['userinfo'].split(':')[0], instance_creds['key']
+        return instance_creds['userinfo'].split(':')
 
     #Else prompt for credentials
     #Wow, I managed to use it
