@@ -6,6 +6,7 @@ import requests
 import re
 from os.path import join, basename
 import sys
+import traceback
 
 from gcis_clients.domain import Figure, Image, Dataset, Parent, Contributor, Person, Organization, Activity, Role
 import survey_transforms as trans
@@ -25,7 +26,7 @@ def get_credentials():
 
 
 def parse_title(graphic_title):
-    match = re.search('\d+\.\d+', graphic_title)
+    match = re.search('\w+\.\d+', graphic_title)
     if match:
         return match.group(0), graphic_title[match.end(0):].strip()
     else:
@@ -35,7 +36,20 @@ def parse_title(graphic_title):
 def populate_figure(fig_json):
     f = Figure({})
     try:
-        f.figure_num, f.title = parse_title(fig_json['graphics_title'])
+        if fig_json['graphics_title'].startswith('ES'):
+            title_fields = fig_json['graphics_title'].split('. ')
+            title = ' '.join(title_fields[1:])
+
+            f.ordinal = re.search('\d+', title_fields[0]).group(0)
+        else:
+            figure_num, title = parse_title(fig_json['graphics_title'])
+
+            if figure_num and figure_num.startswith('TSD'):
+                f.ordinal = figure_num.split('.')[1]
+            else:
+                f.figure_num = figure_num if figure_num else None
+
+        f.title = title
         f.identifier = fig_json['figure_id'] if fig_json['figure_id'] else re.sub('\W', '_', f.title).lower()
         f.create_dt = fig_json['graphics_create_date'].strip()
         if any(fig_json['period_record']):
@@ -43,7 +57,7 @@ def populate_figure(fig_json):
         f.lat_min, f.lat_max, f.lon_min, f.lon_max = fig_json['spatial_extent']
     except Exception, e:
         warning('Figure exception: ', e)
-
+        traceback.print_exc()
     return f
 
 

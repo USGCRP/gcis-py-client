@@ -108,7 +108,7 @@ class GcisClient(object):
         self.s.headers.update({'Accept': 'application/json'})
 
     @http_resp
-    def create_figure(self, report_id, chapter_id, figure, skip_images=False):
+    def create_figure(self, report_id, chapter_id, figure, skip_images=False, skip_upload=False):
         if figure.identifier in (None, ''):
             raise Exception('Invalid figure identifier', figure.identifier)
 
@@ -124,7 +124,7 @@ class GcisClient(object):
         if resp.status_code != 200:
             return resp
 
-        if figure.local_path is not None:
+        if not skip_upload and figure.local_path is not None:
             self.upload_figure_file(report_id, chapter_id, figure.identifier, figure.local_path)
 
         if skip_images is False:

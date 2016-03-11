@@ -19,7 +19,7 @@ class PyTest(TestCommand):
 
 setup(
     name='GcisPyClient',
-    version='1.1',
+    version='1.1.1',
     author='Andrew Buddenberg',
     author_email='andrew.buddenberg@noaa.gov',
     packages=find_packages(),

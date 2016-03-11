@@ -38,14 +38,15 @@ def realize_contributors(gcis_client, contributors):
         person = cont.person
         org = cont.organization
 
-        name_matches = gcis_client.lookup_person(person.first_name + ' ' + person.last_name)
-        if len(name_matches) == 1:
-            person.id = name_matches[0][0]
-        elif len(name_matches) == 0:
-            warning('No ID found for ' + person.first_name + ' ' + person.last_name)
-        else:
-            warning('Ambiguous results for ' + person.first_name + ' ' + person.last_name)
-            warning(name_matches)
+        if not person.id:
+            name_matches = gcis_client.lookup_person(person.first_name + ' ' + person.last_name)
+            if len(name_matches) == 1:
+                person.id = name_matches[0][0]
+            elif len(name_matches) == 0:
+                warning('No ID found for ' + person.first_name + ' ' + person.last_name)
+            else:
+                warning('Ambiguous results for ' + person.first_name + ' ' + person.last_name)
+                warning(name_matches)
 
         if org and org.identifier in (None, '') and org.name not in (None, ''):
             warning('No ID found for ' + org.name)
