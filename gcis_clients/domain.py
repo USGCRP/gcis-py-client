@@ -107,6 +107,9 @@ class Figure(GcisObject):
         image_list = data.pop('images', None)
         self.images = [Image(image) for image in image_list] if image_list else []
 
+        file_list = data.pop('files', None)
+        self.files = [File(f) for f in file_list] if file_list else []
+
         #Hack
         self.identifier = self.identifier.replace('/figure/', '') if self.identifier not in ('', None) else '***ID MISSING***'
 
@@ -468,3 +471,18 @@ class Webpage(Gcisbase):
     def __str__(self):
         return self.__repr__()
 
+
+class File(Gcisbase):
+    def __init__(self, data, trans=()):
+        self.gcis_fields = ['landing_page', 'sha1', 'url', 'thumbnail_href', 'uri', 'href', 'location', 'file', 'identifier', 'thumbnail', 'mime_type', 'size']
+
+        super(File, self).__init__(data, fields=self.gcis_fields, trans=trans)
+
+    # def as_json(self, indent=0, omit_fields=('files', 'parents', 'contributors', 'references', 'cited_by')):
+    #     return super(File, self).as_json(omit_fields=omit_fields)
+
+    def __repr__(self):
+        return '<File id:{id} path:{p}>'.format(id=self.identifier, p=self.file)
+
+    def __str__(self):
+        return self.__repr__()

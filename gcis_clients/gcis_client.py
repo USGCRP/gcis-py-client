@@ -746,4 +746,9 @@ class GcisClient(object):
             raise Exception('Lookup failed:\nQuery:{q}\nType:{t}\nResponse:\n{r}'.format(q=name, t=pub_type, r=resp.text))
 
 
+    @http_resp
+    def delete_file(self, file):
+        url = '{b}/file/{id}'.format(b=self.base_url, id=file.identifier)
+        return self.s.delete(url, verify=False)
+
 
