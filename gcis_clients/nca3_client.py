@@ -27,7 +27,7 @@ class Nca3Client(object):
         self.cookie_jar = '/tmp/cookies'
         try:
             self.s.cookies = pickle.load(open(self.cookie_jar, 'r'))
-        except Exception, e:
+        except Exception as e:
             pass
 
     def do_login(self):

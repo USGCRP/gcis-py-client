@@ -18,7 +18,7 @@ def sanitized(pattern):
             if re.match(pattern, urllib.quote(args[1])):
                 return fn(*args, **kwargs)
             else:
-                print 'Rejected: ', args[1]
+                print('Rejected: ', args[1])
         return wrapped
     return dec
 
@@ -113,13 +113,13 @@ class WebformClient:
                             dataset.temporal_extent = ' '.join(
                                 [parse(dataset_json[field]).isoformat() for field in ['start_time', 'end_time']]
                             )
-                        except TypeError, e:
-                            print 'Problem with start/end time: ', fig_url, f.title, e
-                            print dataset_json['start_time'], dataset_json['end_time']
+                        except TypeError as e:
+                            print('Problem with start/end time: ', fig_url, f.title, e)
+                            print(dataset_json['start_time'], dataset_json['end_time'])
                             dataset.temporal_extent = None
-                        except ValueError, e:
-                            print 'Problem with start/end time: ', fig_url, f.title, e
-                            print dataset_json['start_time'], dataset_json['end_time']
+                        except ValueError as e:
+                            print('Problem with start/end time: ', fig_url, f.title, e)
+                            print(dataset_json['start_time'], dataset_json['end_time'])
                             dataset.temporal_extent = None
 
                         dataset.spatial_extent = ' '.join(['{k}: {v};'.format(k=key, v=dataset_json[key]) for key in

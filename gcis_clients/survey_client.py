@@ -55,7 +55,7 @@ def populate_figure(fig_json):
         if any(fig_json['period_record']):
             f.time_start, f.time_end = [d.strip() for d in fig_json['period_record']]
         f.lat_min, f.lat_max, f.lon_min, f.lon_max = fig_json['spatial_extent']
-    except Exception, e:
+    except Exception as e:
         warning('Figure exception: ', e)
         traceback.print_exc()
     return f
@@ -70,7 +70,7 @@ def populate_image(img_json):
         if any(img_json['period_record']):
             img.time_start, img.time_end = [d.strip() for d in img_json['period_record']]
         img.lat_min, img.lat_max, img.lon_min, img.lon_max = img_json['spatial_extent']
-    except Exception, e:
+    except Exception as e:
         warning('Image exception: ', e)
 
     return img
@@ -86,7 +86,7 @@ def populate_dataset(ds_json):
             'url': ds_json['dataset_url']
         }, known_ids=trans.DATASET_IDS)
 
-    except Exception, e:
+    except Exception as e:
         warning('Dataset exception: ', e)
         ds = None
 
@@ -111,7 +111,7 @@ def populate_activity(mthd_json):
         act.software = ', '.join([s for s in mthd_json['dataset_software_used'] if s])
         act.visualization_software = ', '.join([vs for vs in mthd_json['dataset_visualization_software'] if vs])
 
-    except Exception, e:
+    except Exception as e:
         warning('Activity exception: ', e)
 
     return act, mthd_json['image_name'], mthd_json['dataset'].strip() if mthd_json['dataset'] else None
@@ -123,7 +123,7 @@ def populate_parent(pub_json):
         p.url = ''
         apply_parent_search_hints(p)
 
-    except Exception, e:
+    except Exception as e:
         warning('Parent exception: ', e)
         p = Parent({})
 
@@ -181,7 +181,7 @@ def populate_contributors(field):
 
     except KeyError:
         warning('Missing role for ' + person_key)
-    except Exception, e:
+    except Exception as e:
         warning('Contributor exception: ', e)
         return contributor
 
@@ -265,7 +265,7 @@ class SurveyClient:
                                     p.activity = act
 
                             f.images[idx].add_parent(p)
-                        except Exception, e:
+                        except Exception as e:
                             warning('Dataset / Image association exception: ', e)
                 # Else associate the datasets with the figure
                 else:
@@ -279,7 +279,7 @@ class SurveyClient:
                                 p.activity = act
 
                         f.add_parent(p)
-                    except Exception, e:
+                    except Exception as e:
                         warning('Dataset / Figure association exception: ', e)
 
         if 'poc' in tier1_json:

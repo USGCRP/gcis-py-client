@@ -128,7 +128,7 @@ class Figure(GcisObject):
             chp = int(chp)
             fig = int(fig)
         except ValueError:
-            print 'Invalid chapter/figure numbers: ' + value
+            print('Invalid chapter/figure numbers: ' + value)
             chp = None
             fig = None
         self.ordinal = fig

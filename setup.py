@@ -34,7 +34,8 @@ setup(
         "python-dateutil >= 2.2",
         "PyYAML >= 3.11",
         "beautifulsoup4 >= 4.3.2",
-        "pytest >= 2.5.2"
+        "pytest >= 2.5.2",
+        "html5lib >= 0.99"
     ],
     cmdclass={'test': PyTest},
 )

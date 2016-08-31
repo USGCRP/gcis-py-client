@@ -55,7 +55,7 @@ def get_credentials(url):
                           os.path.exists(expanduser(f))]
 
     for gcis_config in conf_possibilities:
-        print 'Using {gc} for credentials...'.format(gc=gcis_config)
+        print('Using {gc} for credentials...'.format(gc=gcis_config))
         all_creds = yaml.load(open(gcis_config, 'r'))
         instance_creds = [c for c in all_creds if c['url'] == url][0]
 
@@ -302,8 +302,8 @@ class GcisClient(object):
     def has_all_associated_images(self, report_id, figure_id, target_image_ids):
         try:
             figure_image_ids = [i.identifier for i in self.get_figure(report_id, figure_id).images]
-        except Exception, e:
-            print e.message
+        except Exception as e:
+            print(e.message)
             return False, set()
 
         target_set = set(target_image_ids)
@@ -425,10 +425,10 @@ class GcisClient(object):
 
     def create_or_update_dataset(self, dataset):
         if self.dataset_exists(dataset.identifier):
-            print 'Updating dataset: ' + dataset.identifier
+            print('Updating dataset: ' + dataset.identifier)
             self.update_dataset(dataset)
         else:
-            print 'Creating dataset: ' + dataset.identifier
+            print('Creating dataset: ' + dataset.identifier)
             self.create_dataset(dataset)
 
     # @exists
@@ -614,7 +614,7 @@ class GcisClient(object):
                 'role': contrib.role.type_id,
             }
         except AttributeError as e:
-            print 'Contributor {c} missing role'.format(c=contrib)
+            print('Contributor {c} missing role'.format(c=contrib))
             raise e
 
         if contrib.person is not None and contrib.person.id is not None:
@@ -677,7 +677,7 @@ class GcisClient(object):
         try:
             self.delete_figure_parent_assoc(report_id, figure_id, parent)
         except AssociationException as e:
-            print e.value
+            print(e.value)
 
         resp = self.s.post(url, data=json.dumps(data), verify=False)
         return resp
@@ -713,7 +713,7 @@ class GcisClient(object):
         try:
             self.delete_dataset_image_assoc(image_id, parent)
         except AssociationException as e:
-            print e.value
+            print(e.value)
 
         resp = self.s.post(url, data=json.dumps(data), verify=False)
         return resp
