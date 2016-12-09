@@ -123,21 +123,22 @@ class Figure(GcisObject):
     #TODO: Ordinal handling is unnecessarily complex
     @figure_num.setter
     def figure_num(self, value):
-        try:
-            chp, fig = value.split('.')
-            chp = int(chp)
-            fig = int(fig)
-        except ValueError:
-            print 'Invalid chapter/figure numbers: ' + value
-            chp = None
-            fig = None
-        self.ordinal = fig
+        if value:
+            try:
+                chp, fig = value.split('.')
+                chp = int(chp)
+                fig = int(fig)
+            except ValueError:
+                print 'Invalid chapter/figure numbers: ' + value
+                chp = None
+                fig = None
+            self.ordinal = fig
 
-        #If we have an actual Chapter instance, populate it
-        if isinstance(self.chapter, Chapter):
-            self.chapter.number = chp
-        else:
-            self.chapter = chp
+            #If we have an actual Chapter instance, populate it
+            if isinstance(self.chapter, Chapter):
+                self.chapter.number = chp
+            else:
+                self.chapter = chp
 
     def as_json(self, indent=0, omit_fields=('images', 'chapter', 'kindred_figures', 'keywords')):
         return super(Figure, self).as_json(omit_fields=omit_fields)
@@ -277,6 +278,8 @@ class Dataset(GcisObject):
             self._release_dt = parse(value).isoformat() if value else None
         except TypeError:
             self._release_dt = None
+        except ValueError:
+            self._release_dt = None
 
     @property
     def access_dt(self):
@@ -289,6 +292,8 @@ class Dataset(GcisObject):
         except TypeError:
             # print "Problem with date: " + self.access_dt
             self._access_dt = None
+        except ValueError:
+           self._access_dt = None
 
     @property
     def publication_year(self):

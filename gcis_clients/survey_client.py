@@ -26,9 +26,9 @@ def get_credentials():
 
 
 def parse_title(graphic_title):
-    match = re.search('\w+\.\d+', graphic_title)
+    match = re.search('^(\d+[a-z]?)\.', graphic_title)
     if match:
-        return match.group(0), graphic_title[match.end(0):].strip()
+        return match.group(1), graphic_title[match.end(0):].strip()
     else:
         return None, graphic_title
 
@@ -36,19 +36,8 @@ def parse_title(graphic_title):
 def populate_figure(fig_json):
     f = Figure({})
     try:
-        if fig_json['graphics_title'].startswith('ES'):
-            title_fields = fig_json['graphics_title'].split('. ')
-            title = ' '.join(title_fields[1:])
-
-            f.ordinal = re.search('\d+', title_fields[0]).group(0)
-        else:
-            figure_num, title = parse_title(fig_json['graphics_title'])
-
-            if figure_num and figure_num.startswith('TSD'):
-                f.ordinal = figure_num.split('.')[1]
-            else:
-                f.figure_num = figure_num if figure_num else None
-
+        figure_num, title = parse_title(fig_json['graphics_title'])
+        f.ordinal = figure_num if figure_num else None
         f.title = title
         f.identifier = fig_json['figure_id'] if fig_json['figure_id'] else re.sub('\W', '_', f.title).lower()
         f.create_dt = fig_json['graphics_create_date'].strip()
@@ -219,7 +208,7 @@ class SurveyClient:
             figure_json = tier1_json['figure']
             #It's not worth trying to translations on this data; it's too different
             f = populate_figure(figure_json)
-            f.remote_path = survey_json[0]['filepath']
+            f.remote_path = survey_json[0]['filepath'].replace('sites/default/', 'system/')
             f.local_path = join(self.local_download_dir, basename(f.remote_path)) if f.remote_path else None
 
             if 'copyright' in survey_json[0]:

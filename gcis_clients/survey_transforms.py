@@ -9,7 +9,9 @@ DATASET_IDS = {
     'ArboNet': 'cdc-arbonet',
     'U.S. Natural Hazard Statistics': 'noaa-nws-us-natural-hazard-statistics',
     'Billion-Dollar Weather and Climate Disasters': 'noaa-ncdc-billion-dollar-weather-climate-disasters',
-    'ESRI USA10 dataset (ArcGIS version 10.0)': 'esri-arcgis-v10-0'
+    'ESRI USA10 dataset (ArcGIS version 10.0)': 'esri-arcgis-v10-0',
+    'nClimDiv': 'noaa-ncdc-cag-us-temperature-nclimdiv',
+    'Global Historical Climatology Network (GHCN) Daily': 'noaa-ncdc-ghcn-daily'
 }
 
 COPYRIGHT_TRANSLATIONS = {

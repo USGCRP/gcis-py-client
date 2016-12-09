@@ -31,9 +31,9 @@ def parse_creators(field):
     first_name, last_name = name_split[0], name_split[-1]
     org_name = rest[0] if len(rest) > 0 else None
 
-    contributor = Contributor({}, hints=trans.CONTRIB_ROLES)
+    contributor = Contributor({})
     contributor.person = Person({'first_name': first_name, 'last_name': last_name})
-    contributor.organization = Organization({'name': org_name}, known_ids=trans.ORG_IDS)
+    contributor.organization = Organization({'name': org_name})
 
     return contributor
 
@@ -92,7 +92,7 @@ class WebformClient:
         #Add provenance information (wasDerivedFrom parent)
         if 'what_type_of_source_provided_this_figure' in figure_json and figure_json[
             'what_type_of_source_provided_this_figure'] == 'published_source':
-            f.add_parent(Parent(deepcopy(f.original), trans=trans.PARENT_TRANSLATIONS, pubtype_map=trans.PARENT_PUBTYPE_MAP, search_hints=trans.PARENT_SEARCH_HINTS))
+            f.add_parent(Parent(deepcopy(f.original), trans=trans.PARENT_TRANSLATIONS, pubtype_map=trans.PARENT_PUBTYPE_MAP))
 
         if 'images' in webform_json[webform_nid]:
             for img_idx, image in enumerate(webform_json[webform_nid]['images']):
@@ -134,8 +134,8 @@ class WebformClient:
                         activity_json['identifier'] = '-'.join((image_obj.identifier.split('-')[0], dataset.identifier, 'process'))
                         dataset.activity = Activity(activity_json, trans=trans.ACT_TRANSLATIONS)
 
-                        #TODO: Extract DOIs from citation
-                        image_obj.datasets.append(dataset)
+                        # TODO: Extract DOIs from citation
+                        # image_obj.datasets.append(dataset)
 
                 f.images.append(image_obj)
             #If download_images arg is set, attempt to download all images for this figure
