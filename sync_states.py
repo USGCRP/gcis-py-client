@@ -16,7 +16,6 @@ import re
 import traceback
 
 
-# gcis = GcisClient('https://data-stage.globalchange.gov', *gcis_stage_auth)
 gcis = GcisClient('https://data-stage.globalchange.gov', *gcis_stage_auth)
 
 surveys = SurveyClient('https://state-resources.cicsnc.org', survey_token)
@@ -24,38 +23,35 @@ surveys = SurveyClient('https://state-resources.cicsnc.org', survey_token)
 
 def main():
     print(gcis.test_login())
-    total = 0
+
     for report_id in sync_metadata_tree:
         for chapter_id in sync_metadata_tree[report_id]:
             for survey_url, figure_id, figure_num in sync_metadata_tree[report_id][chapter_id]:
-                total += 1
-                # figure, datasets = surveys.get_survey(survey_url, do_download=True)
+                figure, datasets = surveys.get_survey(survey_url, do_download=True)
 
-                # #Fix misspelling
-                # figure.identifier = figure_id
-                # figure.title = figure.title.replace('precipitaton', 'precipitation')
-                # figure.ordinal = figure_num
-                #
-                # print(survey_url)
-                # print(figure, datasets)
-                #
-                # realize_parents(gcis, figure.parents)
-                # realize_contributors(gcis, figure.contributors)
-                #
-                # print('Contributors: ', figure.contributors)
-                # print('Parents: ', figure.parents)
-                # # gcis_fig = gcis.get_figure(report_id, figure_id, chapter_id=chapter_id)
-                #
-                # for ds in [p for p in figure.parents if p.publication_type_identifier == 'dataset']:
-                #     # Assign synthetic activity identifier to for datasets associated with figure
-                #     if ds.activity and ds.activity.identifier is None:
-                #         ds.activity.identifier = generate_activity_id(figure, ds.publication)
-                #     print 'Dataset: ', ds.activity
-                #
-                # print 'Creating figure... ', gcis.create_figure(report_id, chapter_id, figure, skip_images=True, skip_upload=False)
-                # # print 'Updating figure... ', gcis.update_figure(report_id, chapter_id, figure, skip_images=True)
+                #Fix misspelling
+                figure.identifier = figure_id
+                figure.title = figure.title.replace('precipitaton', 'precipitation')
+                figure.ordinal = figure_num
 
-    print(total)
+                print(survey_url)
+                print(figure, datasets)
+
+                realize_parents(gcis, figure.parents)
+                realize_contributors(gcis, figure.contributors)
+
+                print('Contributors: ', figure.contributors)
+                print('Parents: ', figure.parents)
+                # gcis_fig = gcis.get_figure(report_id, figure_id, chapter_id=chapter_id)
+
+                for ds in [p for p in figure.parents if p.publication_type_identifier == 'dataset']:
+                    # Assign synthetic activity identifier to for datasets associated with figure
+                    if ds.activity and ds.activity.identifier is None:
+                        ds.activity.identifier = generate_activity_id(figure, ds.publication)
+                    print('Dataset: ', ds.activity)
+
+                print('Creating figure... ', gcis.create_figure(report_id, chapter_id, figure, skip_images=True, skip_upload=False))
+                # print('Updating figure... ', gcis.update_figure(report_id, chapter_id, figure, skip_images=True))
 
     
 def generate_activity_id(image, dataset):

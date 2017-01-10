@@ -12,12 +12,24 @@ sync_metadata_tree = {
             ('/metadata/figures/3820', 'al-projected-change-in-spring-precipitation', '4'),
             ('/metadata/figures/3821', 'al-past-and-projected-changes-in-global-sea-level', '5')
         ]),
-        ('alaska', []),
+        ('alaska', [
+            ('', 'ak-observed-and-projected-temperature-change', '1'),
+            ('', 'ak-observed-summer-temperature', '2'),
+            ('', 'ak-observed-winter-temperature', '3a'),
+            ('', 'ak-observed-number-of-warm-days', '3b'),
+            ('', 'ak-observed-summer-precipitation', '3c'),
+            ('', 'ak-observed-number-of-extreme-precipitation-events', '3d'),
+            ('', 'ak-observed-number-of-very-cold-nights', '4'),
+            ('', 'ak-observed-annual-precipitation', '5'),
+            ('', 'march-and-september-arctic-sea-ice-extent', '6'),
+            ('', 'ak-past-and-projected-changes-in-global-sea-level', '7'),
+            ('', 'ak-projected-change-in-annual-precipitation', '8')
+        ]),
         ('arizona', [
             ('/metadata/figures/3676', 'az-observed-and-projected-temperature-change', '1'),
             ('/metadata/figures/3672', 'az-observed-number-of-extremely-hot-days', '2a'),
-            ('/metadata/figures/3670', 'az-observed-maximum-summer-temperature', '2b'),
-            ('/metadata/figures/4083', 'az-observed-minimum-summer-temperature', '2b'),
+            ('/metadata/figures/3670', 'az-observed-maximum-summer-temperature', '2b-1'),
+            ('/metadata/figures/4083', 'az-observed-minimum-summer-temperature', '2b-2'),
             ('/metadata/figures/3668', 'az-observed-annual-precipitation', '2c'),
             ('/metadata/figures/3673', 'az-observed-number-of-extreme-precipitation-events', '2d'),
             ('/metadata/figures/3674', 'az-observed-number-of-extremely-warm-nights', '3'),
@@ -40,15 +52,18 @@ sync_metadata_tree = {
         ]),
         ('california', [
             ('/metadata/figures/4086', 'ca-observed-and-projected-temperature-change', '1'),
-            ('/metadata/figures/4090', 'ca-observed-number-of-extremely-hot-days', '2'),
+            ('/metadata/figures/4090', 'ca-observed-number-of-extremely-hot-days', '2a'),
             ('/metadata/figures/4094', 'ca-observed-annual-precipitation', '2b'),
             ('/metadata/figures/4089', 'ca-observed-number-of-extreme-precipitation-events', '2c'),
             ('/metadata/figures/4095', 'ca-observed-winter-precipitation', '2d'),
             ('/metadata/figures/4092', 'ca-observed-number-of-very-warm-nights', '3'),
+            ('', 'ca-observed-number-of-cold-nights', '4'),
+            ('', 'april-1-snow-water-equivalent-at-donner-summit', '5'),
             ('/metadata/figures/4088', 'ca-storage-levels-in-the-shasta-dam-reservoir', '6'),
             ('/metadata/figures/4096', 'california-palmer-drought-severity-index', '7'),
             ('/metadata/figures/4093', 'ca-projected-change-in-winter-precipitation', '8'),
-            ('/metadata/figures/4084', 'ca-past-and-projected-changes-in-global-sea-level', '9')
+            ('/metadata/figures/4084', 'ca-past-and-projected-changes-in-global-sea-level', '9'),
+            ('', 'observed-and-projected-annual-number-of-tidal-floods-for-la-jolla-and-san-francisco-ca', '10')
         ]),
         ('colorado', [
             ('/metadata/figures/3695', 'co-observed-and-projected-temperature-change', '1'),
@@ -58,8 +73,8 @@ sync_metadata_tree = {
             ('/metadata/figures/3691', 'co-observed-number-of-very-cold-nights', '4'),
             ('/metadata/figures/3694', 'co-observed-number-of-warm-nights', '5a'),
             ('/metadata/figures/3689', 'co-observed-annual-precipitation', '5b'),
-            ('/metadata/figures/3690', 'co-observed-fall-precipitation', '5c'),
-            ('/metadata/figures/3696', 'co-observed-spring-precipitation', '5c'),
+            ('/metadata/figures/3690', 'co-observed-fall-precipitation', '5c-1'),
+            ('/metadata/figures/3696', 'co-observed-spring-precipitation', '5c-2'),
             ('/metadata/figures/3692', 'co-observed-number-of-extreme-precipitation-events', '5d'),
             ('/metadata/figures/3893', 'co-end-of-season-snow-water-equivalent-depth-at-tower', '6'),
             ('/metadata/figures/3699', 'co-projected-change-in-winter-precipitation', '7'),
@@ -74,6 +89,7 @@ sync_metadata_tree = {
             ('/metadata/figures/3851', 'ct-observed-number-of-warm-nights', '3'),
             ('/metadata/figures/3849', 'ct-observed-number-of-very-cold-nights', '4'),
             ('/metadata/figures/3853', 'ct-projected-change-in-spring-precipitation', '5'),
+            ('', 'observed-and-projected-annual-number-of-tidal-floods-new-london-ct', '6'),
             ('/metadata/figures/3876', 'ct-past-and-projected-changes-in-global-sea-level', '7')
         ]),
         ('delaware', [
@@ -83,6 +99,8 @@ sync_metadata_tree = {
             ('/metadata/figures/3756', 'de-observed-annual-precipitation', '2c'),
             ('/metadata/figures/3758', 'de-observed-number-of-extreme-precipitation-events', '2d'),
             ('/metadata/figures/3760', 'de-observed-number-of-very-warm-nights', '3'),
+            ('', 'de-change-in-annual-precipitation', '4'),
+            ('', 'observed-and-projected-annual-number-of-tidal-floods-lewes-de', '5'),
             ('/metadata/figures/3830', 'de-past-and-projected-changes-in-global-sea-level', '6')
         ]),
         ('florida', [
@@ -90,9 +108,13 @@ sync_metadata_tree = {
             ('/metadata/figures/3765', 'fl-observed-number-of-very-hot-days', '2a'),
             ('/metadata/figures/3951', 'fl-observed-number-of-nights-below-freezing', '2b'),
             ('/metadata/figures/3763', 'fl-observed-annual-precipitation', '2c'),
+            ('', 'total-hurricane-events-in-florida', '2d'),
             ('/metadata/figures/3766', 'fl-observed-number-of-very-warm-nights', '3'),
+            ('', 'average-annual-number-of-days-with-a-minimum-temperature-less-than-or-equal-to-32', '4'),
             ('/metadata/figures/3764', 'fl-observed-number-of-extreme-precipitation-events', '5'),
-            ('/metadata/figures/3768', 'fl-projected-change-in-summer-precipitation', '6')
+            ('/metadata/figures/3768', 'fl-projected-change-in-summer-precipitation', '6'),
+            ('', 'observed-and-projected-annual-number-of-tidal-floods-key-west-fl', '7'),
+            ('', 'fl-past-and-projected-changes-in-global-sea-level', '8')
         ]),
         ('georgia', [
             ('/metadata/figures/3774', 'ga-observed-and-projected-temperature-change', '1'),
@@ -102,10 +124,21 @@ sync_metadata_tree = {
             ('/metadata/figures/3772', 'ga-observed-number-of-extreme-precipitation-events', '2d'),
             ('/metadata/figures/3773', 'ga-observed-number-of-very-warm-nights', '3'),
             ('/metadata/figures/3769', 'ga-observed-annual-precipitation', '4'),
-            ('/metadata/figures/3825', 'ga-past-and-projected-changes-in-global-sea-level', '6')
+            ('', 'ga-projected-change-in-annual-precipitation', '5'),
+            ('/metadata/figures/3825', 'ga-past-and-projected-changes-in-global-sea-level', '6'),
+            ('', 'observed-and-projected-annual-number-of-tidal-floods-fort-pulaski-ga', '7')
         ]),
         ('hawaii', [
-            ('/metadata/figures/4108', 'hi-past-and-projected-changes-in-global-sea-level', '9')
+            ('', 'hi-observed-and-projected-temperature-change', '1'),
+            ('', 'hi-observed-temperature-change', '2'),
+            ('', 'hi-observed-number-of-hot-days', '3'),
+            ('', 'hi-observed-number-of-very-warm-nights', '4'),
+            ('', 'time-series-of-hri-anomalies', '5'),
+            ('', 'hi-observed-precipitation-change', '6'),
+            ('', 'hi-observed-number-of-extreme-precipitation-events', '7'),
+            ('', 'hi-projected-change-in-annual-precipitation', '8'),
+            ('/metadata/figures/4108', 'hi-past-and-projected-changes-in-global-sea-level', '9'),
+            ('', 'observed-and-projected-annual-number-of-tidal-floods-honolulu-hi', '10')
         ]),
         ('idaho', [
             ('/metadata/figures/3645', 'id-observed-and-projected-temperature-change', '1'),
@@ -114,8 +147,9 @@ sync_metadata_tree = {
             ('/metadata/figures/3648', 'id-observed-number-of-very-cold-nights', '4'),
             ('/metadata/figures/3646', 'id-observed-annual-precipitation', '5'),
             ('/metadata/figures/3650', 'id-observed-number-of-extreme-precipitation-events', '6'),
-            ('/metadata/figures/3651', 'id-projected-change-in-spring-precipitation', '7'),
-            ('/metadata/figures/3906', 'end-of-season-snow-water-equivalent-depth-at-bear-mountain', '8')
+            ('', 'april-1-snow-water-equivalent-at-camp-creek-id', '7'),
+            ('/metadata/figures/3651', 'id-projected-change-in-spring-precipitation', '8')
+            # ('/metadata/figures/3906', 'end-of-season-snow-water-equivalent-depth-at-bear-mountain', '9') #Not used?
         ]),
         ('illinois', [
             ('/metadata/figures/3663', 'il-observed-and-projected-temperature-change', '1'),
@@ -125,24 +159,26 @@ sync_metadata_tree = {
             ('/metadata/figures/3662', 'il-observed-number-of-very-warm-nights', '3b'),
             ('/metadata/figures/3660', 'il-observed-number-of-very-cold-nights', '3c'),
             ('/metadata/figures/3832', 'il-observed-annual-precipitation', '3d'),
-            ('/metadata/figures/3665', 'il-observed-summer-precipitation', '4'),
-            ('/metadata/figures/3946', 'il-observed-spring-precipitation', '4'),
+            ('/metadata/figures/3946', 'il-observed-spring-precipitation', '4a'),
+            ('/metadata/figures/3665', 'il-observed-summer-precipitation', '4b'),
             ('/metadata/figures/3659', 'il-observed-number-of-extreme-precipitation-events', '5'),
             ('/metadata/figures/3947', 'il-annual-lake-wide-average-water-levels-for-lake-michigan-huron', '6'),
+            ('', 'il-hours-of-heat-index-over-threshold-values', '7'),
             ('/metadata/figures/3667', 'il-projected-change-in-spring-precipitation', '8')
         ]),
         ('indiana', [
             ('/metadata/figures/3683', 'in-observed-and-projected-temperature-change', '1'),
-            ('/metadata/figures/3685', 'in-observed-spring-temperature', '2a'),
-            ('/metadata/figures/3687', 'in-observed-summer-temperature', '2a'),
+            ('/metadata/figures/3685', 'in-observed-spring-temperature', '2a-1'),
+            ('/metadata/figures/3687', 'in-observed-summer-temperature', '2a-2'),
             ('/metadata/figures/3681', 'in-observed-number-of-very-hot-days', '2b'),
             ('/metadata/figures/3682', 'in-observed-number-of-very-warm-nights', '2c'),
-            ('/metadata/figures/3684', 'in-observed-spring-precipitation', '2d'),
-            ('/metadata/figures/3686', 'in-observed-summer-precipitation', '2d'),
+            ('/metadata/figures/3684', 'in-observed-spring-precipitation', '2d-1'),
+            ('/metadata/figures/3686', 'in-observed-summer-precipitation', '2d-2'),
             ('/metadata/figures/3680', 'in-observed-number-of-very-cold-nights', '3'),
             ('/metadata/figures/3678', 'in-observed-annual-precipitation', '4'),
             ('/metadata/figures/3679', 'in-observed-number-of-extreme-precipitation-events', '5'),
-            ('/metadata/figures/3688', 'in-projected-change-in-spring-precipitation', '7'),
+            ('', 'in-annual-lake-wide-average-water-levels-for-lake-michigan-huron', '6'),
+            ('/metadata/figures/3688', 'in-projected-change-in-spring-precipitation', '7')
         ]),
         ('iowa', [
             ('/metadata/figures/3700', 'ia-observed-and-projected-temperature-change', '1'),
@@ -150,31 +186,31 @@ sync_metadata_tree = {
             ('/metadata/figures/3703', 'ia-observed-number-of-very-hot-days', '2b'),
             ('/metadata/figures/3704', 'ia-observed-number-of-very-warm-nights', '2c'),
             ('/metadata/figures/3702', 'ia-observed-number-of-very-cold-nights', '2d'),
-            ('/metadata/figures/3705', 'ia-observed-spring-precipitation', '3'),
-            ('/metadata/figures/3814', 'ia-observed-summer-precipitation', '3'),
+            ('/metadata/figures/3705', 'ia-observed-spring-precipitation', '3a'),
+            ('/metadata/figures/3814', 'ia-observed-summer-precipitation', '3b'),
+            ('/metadata/figures/3708', 'ia-observed-annual-precipitation', '4'),
             ('/metadata/figures/3701', 'ia-observed-number-of-extreme-precipitation-events', '5'),
-            ('/metadata/figures/3708', 'ia-observed-annual-precipitation', '5'),
             ('/metadata/figures/3707', 'ia-projected-change-in-spring-precipitation', '6')
         ]),
         ('kansas', [
             ('/metadata/figures/3601', 'ks-observed-and-projected-temperature-change', '1'),
-            ('/metadata/figures/3607', 'ks-observed-spring-temperature', '2'),
-            ('/metadata/figures/3609', 'ks-observed-summer-temperature', '2'),
+            ('/metadata/figures/3607', 'ks-observed-spring-temperature', '2a'),
+            ('/metadata/figures/3609', 'ks-observed-summer-temperature', '2b'),
             ('/metadata/figures/3604', 'ks-observed-number-of-very-warm-nights', '3a'),
             ('/metadata/figures/3603', 'ks-observed-number-of-extremely-hot-days', '3b'),
             ('/metadata/figures/3627', 'ks-observed-annual-precipitation', '3c'),
-            ('/metadata/figures/3606', 'ks-observed-spring-precipitation', '3d'),
-            ('/metadata/figures/3608', 'ks-observed-summer-precipitation', '3d'),
+            ('/metadata/figures/3606', 'ks-observed-spring-precipitation', '3d-1'),
+            ('/metadata/figures/3608', 'ks-observed-summer-precipitation', '3d-2'),
             ('/metadata/figures/3602', 'ks-observed-number-of-very-cold-nights', '4'),
             ('/metadata/figures/3605', 'ks-observed-number-of-extreme-precipitation-events', '5'),
             ('/metadata/figures/3904', 'kansas-palmer-drought-severity-index', '6'),
-            ('/metadata/figures/3610', 'ks-projected-change-in-winter-precipitation', '7')
+            ('/metadata/figures/3610', 'ks-projected-change-in-summer-precipitation', '7')
         ]),
         ('kentucky', [
             ('/metadata/figures/3782', 'ky-observed-and-projected-temperature-change', '1'),
             ('/metadata/figures/3778', 'ky-observed-number-of-extremely-hot-days', '2a'),
-            ('/metadata/figures/3784', 'ky-observed-summer-temperature', '2b'),
-            ('/metadata/figures/3785', 'ky-observed-winter-temperature', '2b'),
+            ('/metadata/figures/3785', 'ky-observed-winter-temperature', '2b-a'),
+            ('/metadata/figures/3784', 'ky-observed-summer-temperature', '2b-b'),
             ('/metadata/figures/3777', 'ky-observed-annual-precipitation', '2c'),
             ('/metadata/figures/3783', 'ky-observed-summer-precipitation', '2d'),
             ('/metadata/figures/3780', 'ky-observed-number-of-very-cold-nights', '3'),
@@ -186,20 +222,23 @@ sync_metadata_tree = {
             ('/metadata/figures/3793', 'la-observed-and-projected-temperature-change', '1'),
             ('/metadata/figures/3791', 'la-observed-number-of-very-hot-days', '2a'),
             ('/metadata/figures/3790', 'la-observed-number-of-days-below-freezing', '2b'),
-            ('/metadata/figures/3788', 'la-observed-fall-precipitation', '2c'),
-            ('/metadata/figures/3794', 'la-observed-spring-precipitation', '2c'),
+            ('/metadata/figures/3794', 'la-observed-spring-precipitation', '2c-1'),
+            ('/metadata/figures/3788', 'la-observed-fall-precipitation', '2c-2'),
             ('/metadata/figures/3789', 'la-observed-number-of-extreme-precipitation-events', '2d'),
             ('/metadata/figures/3792', 'la-observed-number-of-very-warm-nights', '3'),
             ('/metadata/figures/3787', 'la-observed-annual-precipitation', '4'),
+            ('', 'total-hurricane-events-in-louisiana', '5'),
+            ('', 'storm-surge-heights-in-louisiana', '6'),
             ('/metadata/figures/3795', 'la-projected-change-in-summer-precipitation', '7'),
             ('/metadata/figures/3833', 'la-past-and-projected-changes-in-global-sea-level', '8')
         ]),
         ('maine', [
             ('/metadata/figures/3961', 'me-observed-and-projected-temperature-change', '1'),
-            ('/metadata/figures/3966', 'me-observed-number-of-hot-days', '2a'),
-            ('/metadata/figures/3968', 'me-observed-summer-temperature', '2b'),
-            ('/metadata/figures/3969', 'me-observed-winter-temperature', '2b'),
+            ('/metadata/figures/3969', 'me-observed-winter-temperature', '2a-1'),
+            ('/metadata/figures/3968', 'me-observed-summer-temperature', '2a-2'),
+            ('/metadata/figures/3966', 'me-observed-number-of-hot-days', '2b'),
             ('/metadata/figures/3964', 'me-observed-annual-precipitation', '2c'),
+            ('', 'me-change-in-precipitation-by-county', '2d'),
             ('/metadata/figures/3967', 'me-observed-number-of-very-cold-nights', '3'),
             ('/metadata/figures/3965', 'me-observed-number-of-extreme-precipitation-events', '4'),
             ('/metadata/figures/3962', 'me-projected-change-in-winter-precipitation', '5'),
@@ -207,29 +246,33 @@ sync_metadata_tree = {
         ]),
         ('maryland', [
             ('/metadata/figures/3801', 'md-observed-and-projected-temperature-change', '1'),
-            ('/metadata/figures/3799', 'md-observed-number-of-very-hot-days', '2'),
+            ('/metadata/figures/3799', 'md-observed-number-of-very-hot-days', '2a'),
             ('/metadata/figures/3800', 'md-observed-number-of-very-warm-nights', '2b'),
             ('/metadata/figures/3798', 'md-observed-number-of-very-cold-nights', '2c'),
             ('/metadata/figures/3796', 'md-observed-annual-precipitation', '2d'),
+            ('', 'very-warm-and-extremely-hot-days-in-washington-dc', '3'),
             ('/metadata/figures/3797', 'md-observed-number-of-extreme-precipitation-events', '4'),
+            ('', 'md-projected-change-in-annual-precipitation', '5'),
+            ('', 'observed-and-projected-annual-number-of-tidal-floods-baltimore-md', '6'),
             ('/metadata/figures/4059', 'md-past-and-projected-changes-in-global-sea-level', '7')
         ]),
         ('massachusetts', [
             ('/metadata/figures/4010', 'ma-observed-and-projected-temperature-change', '1'),
-            ('/metadata/figures/4051', 'ma-observed-number-of-hot-days', '2'),
+            ('/metadata/figures/4051', 'ma-observed-number-of-hot-days', '2a'),
             ('/metadata/figures/4054', 'ma-observed-number-of-extreme-precipitation-events', '2b'),
             ('/metadata/figures/4056', 'ma-observed-annual-precipitation', '2c'),
             ('/metadata/figures/4057', 'ma-observed-summer-precipitation', '2d'),
             ('/metadata/figures/4052', 'ma-observed-number-of-warm-nights', '3'),
             ('/metadata/figures/4055', 'ma-observed-number-of-very-cold-nights', '4'),
             ('/metadata/figures/4011', 'ma-projected-change-in-spring-precipitation', '5'),
+            ('', 'observed-and-projected-annual-number-of-tidal-floods-boston-ma', '6'),
             ('/metadata/figures/4058', 'ma-past-and-projected-changes-in-global-sea-level', '7')
         ]),
         ('michigan', [
             ('/metadata/figures/3709', 'mi-observed-and-projected-temperature-change', '1'),
             ('/metadata/figures/3712', 'mi-observed-number-of-hot-days', '2a'),
-            ('/metadata/figures/3713', 'mi-observed-number-of-very-cold-nights', '2b'),
             ('/metadata/figures/3714', 'mi-observed-number-of-warm-nights', '2b'),
+            ('/metadata/figures/3713', 'mi-observed-number-of-very-cold-nights', '2c'),
             ('/metadata/figures/3710', 'mi-observed-annual-precipitation', '2d'),
             ('/metadata/figures/3711', 'mi-observed-number-of-extreme-precipitation-events', '3'),
             ('/metadata/figures/3955', 'mi-annual-lake-wide-average-water-levels-for-lake-michigan-huron', '4'),
@@ -237,38 +280,41 @@ sync_metadata_tree = {
         ]),
         ('minnesota', [
             ('/metadata/figures/3611', 'mn-observed-and-projected-temperature-change', '1'),
-            ('/metadata/figures/3613', 'mn-observed-number-of-hot-days', '3'),
-            ('/metadata/figures/3615', 'mn-observed-number-of-very-warm-nights', '3b'),
-            ('/metadata/figures/3952', 'mn-observed-number-of-very-cold-days', '3b'),
-            ('/metadata/figures/3616', 'mn-observed-number-of-extreme-precipitation-events', '3d'),
-            ('/metadata/figures/3612', 'mn-observed-annual-precipitation', '5a'),
-            ('/metadata/figures/3614', 'mn-observed-annual-precipitation', '5b'),
-            ('/metadata/figures/3617', 'mn-projected-change-in-spring-precipitation', '6'),
+            ('/metadata/figures/3613', 'mn-observed-number-of-hot-days', '2a'),
+            ('/metadata/figures/3615', 'mn-observed-number-of-very-warm-nights', '2b'),
+            ('/metadata/figures/3952', 'mn-observed-number-of-very-cold-days', '2c'),
+            ('/metadata/figures/3616', 'mn-observed-number-of-extreme-precipitation-events', '2d'),
+            ('', 'ice-out-dates-on-lake-osakis', '3'),
+            ('/metadata/figures/3612', 'mn-observed-annual-precipitation', '4'),#DUPE
+            # ('/metadata/figures/3614', 'mn-observed-annual-precipitation', '4'),#DUPE
+            ('', 'number-of-extreme-heat-events-by-county', '5'),
+            ('/metadata/figures/3617', 'mn-projected-change-in-spring-precipitation', '6')
         ]),
         ('mississippi', [
             ('/metadata/figures/3948', 'ms-observed-and-projected-temperature-change', '1'),
-            ('/metadata/figures/3859', 'ms-observed-number-of-very-warm-nights', '2'),
-            ('/metadata/figures/3861', 'ms-observed-summer-temperature', '3'),
-            ('/metadata/figures/3857', 'ms-observed-number-of-extreme-precipitation-events', '4'),
-            ('/metadata/figures/3862', 'ms-projected-change-in-summer-precipitation', '6'),
-            ('/metadata/figures/3877', 'ms-past-and-projected-changes-in-global-sea-level', '7'),
-            ('/metadata/figures/3858', 'ms-observed-number-of-days-below-freezing', '7a'),
-            ('/metadata/figures/3855', 'ms-observed-annual-precipitation', '7c'),
-            ('/metadata/figures/3860', 'ms-observed-summer-precipitation', '7d'),
-            ('/metadata/figures/3856', 'ms-observed-number-of-extremely-hot-days', '8a')
+            ('/metadata/figures/3856', 'ms-observed-number-of-extremely-hot-days', '2a'),
+            ('/metadata/figures/3858', 'ms-observed-number-of-days-below-freezing', '2b'),
+            ('/metadata/figures/3855', 'ms-observed-annual-precipitation', '2c'),
+            ('/metadata/figures/3860', 'ms-observed-summer-precipitation', '2d'),
+            ('/metadata/figures/3859', 'ms-observed-number-of-very-warm-nights', '3'),
+            ('/metadata/figures/3861', 'ms-observed-summer-temperature', '4'),
+            ('/metadata/figures/3857', 'ms-observed-number-of-extreme-precipitation-events', '5'),
+            ('', 'storm-surge-heights-at-pass-christian', '6'),
+            ('/metadata/figures/3862', 'ms-projected-change-in-summer-precipitation', '7'),
+            ('/metadata/figures/3877', 'ms-past-and-projected-changes-in-global-sea-level', '8')
         ]),
         ('missouri', [
             ('/metadata/figures/3810', 'mo-observed-and-projected-temperature-change', '1'),
-            ('/metadata/figures/3804', 'mo-observed-maximum-summer-temperature', '2'),
-            ('/metadata/figures/3805', 'mo-observed-minimum-summer-temperature', '2'),
-            ('/metadata/figures/3812', 'mo-observed-summer-temperature', '2'),
+            ('/metadata/figures/3812', 'mo-observed-summer-temperature', '2a'),
+            ('/metadata/figures/3804', 'mo-observed-maximum-summer-temperature', '2b'),
+            ('/metadata/figures/3805', 'mo-observed-minimum-summer-temperature', '2c'),
             ('/metadata/figures/3806', 'mo-observed-number-of-extremely-hot-days', '3a'),
             ('/metadata/figures/3808', 'mo-observed-number-of-very-cold-nights', '3b'),
             ('/metadata/figures/3803', 'mo-observed-annual-precipitation', '3c'),
             ('/metadata/figures/3811', 'mo-observed-summer-precipitation', '3d'),
             ('/metadata/figures/3809', 'mo-observed-number-of-very-warm-nights', '4'),
             ('/metadata/figures/3807', 'mo-observed-number-of-extreme-precipitation-events', '5'),
-            ('/metadata/figures/3813', 'mo-projected-change-in-summer-precipitation', '6')
+            ('/metadata/figures/3813', 'mo-projected-change-in-spring-precipitation', '6')
         ]),
         ('montana', [
             ('/metadata/figures/3723', 'mt-observed-and-projected-temperature-change', '1'),
@@ -277,15 +323,15 @@ sync_metadata_tree = {
             ('/metadata/figures/3724', 'mt-observed-annual-precipitation', '2c'),
             ('/metadata/figures/3731', 'mt-observed-number-of-extreme-precipitation-events', '2d'),
             ('/metadata/figures/3725', 'mt-observed-number-of-very-cold-days', '3'),
-            ('/metadata/figures/3728', 'mt-observed-summer-temperature', '4'),
-            ('/metadata/figures/3729', 'mt-observed-winter-temperature', '4'),
+            ('/metadata/figures/3729', 'mt-observed-winter-temperature', '4a'),
+            ('/metadata/figures/3728', 'mt-observed-summer-temperature', '4b'),
             ('/metadata/figures/3907', 'end-of-season-snow-water-equivalent-depth-at-noisy-basin', '5'),
             ('/metadata/figures/3730', 'mt-projected-change-in-spring-precipitation', '6'),
         ]),
         ('nebraska', [
             ('/metadata/figures/4024', 'ne-observed-and-projected-temperature-change', '1'),
-            ('/metadata/figures/3869', 'ne-observed-summer-temperature', '2'),
-            ('/metadata/figures/3870', 'ne-observed-winter-temperature', '2'),
+            ('/metadata/figures/3870', 'ne-observed-winter-temperature', '2a'),
+            ('/metadata/figures/3869', 'ne-observed-summer-temperature', '2b'),
             ('/metadata/figures/3864', 'ne-observed-number-of-extremely-hot-days', '3a'),
             ('/metadata/figures/3867', 'ne-observed-number-or-warm-nights', '3b'),
             ('/metadata/figures/3863', 'ne-observed-annual-precipitation', '3c'),
@@ -299,13 +345,16 @@ sync_metadata_tree = {
             ('/metadata/figures/3873', 'nv-observed-number-of-very-hot-days', '2'),
             ('/metadata/figures/3874', 'nv-observed-number-of-warm-nights', '3'),
             ('/metadata/figures/3872', 'nv-observed-annual-precipitation', '4'),
-            ('/metadata/figures/3892', 'nv-end-of-season-snow-water-equivalent-depth-at-big-creek-summit', '6'),
-            ('/metadata/figures/3905', 'nevada-palmer-drought-severity-index', '7'),
-            ('/metadata/figures/3891', 'nv-lake-mead-elevation-at-hoover-dam', '8')
+            ('/metadata/figures/3905', 'nevada-palmer-drought-severity-index', '5'),
+            ('/metadata/figures/3891', 'nv-lake-mead-elevation-at-hoover-dam', '6'),
+            ('', 'april-1-snow-water-equivalent-at-mt-rose-nv', '7'),
+            ('', 'lake-tahoe-water-levels', '8'),
+            ('', 'nv-projected-change-in-annual-precipitation', '9')
+            # ('/metadata/figures/3892', 'nv-end-of-season-snow-water-equivalent-depth-at-big-creek-summit', '7'), #Not used?
         ]),
         ('new-hampshire', [
             ('/metadata/figures/4062', 'nh-observed-and-projected-temperature-change', '1'),
-            ('/metadata/figures/4066', 'nh-observed-number-of-hot-days', '2'),
+            ('/metadata/figures/4066', 'nh-observed-number-of-hot-days', '2a'),
             ('/metadata/figures/4069', 'nh-observed-number-of-warm-nights', '2b'),
             ('/metadata/figures/4064', 'nh-observed-annual-precipitation', '2c'),
             ('/metadata/figures/4067', 'nh-observed-summer-precipitation', '2d'),
@@ -323,6 +372,7 @@ sync_metadata_tree = {
             ('/metadata/figures/3975', 'nj-observed-number-of-warm-nights', '3'),
             ('/metadata/figures/3972', 'nj-observed-number-of-extreme-precipitation-events', '4'),
             ('/metadata/figures/3978', 'nj-projected-change-in-spring-precipitation', '5'),
+            ('', 'observed-and-projected-annual-number-of-tidal-floods-for-atlantic-city-nj', '6'),
             ('/metadata/figures/3979', 'nj-past-and-projected-changes-in-global-sea-level', '7')
         ]),
         ('new-mexico', [
@@ -339,25 +389,30 @@ sync_metadata_tree = {
         ]),
         ('new-york', [
             ('/metadata/figures/3958', 'ny-observed-and-projected-temperature-change', '1'),
-            ('/metadata/figures/3885', 'ny-observed-summer-temperature', '2a'),
-            ('/metadata/figures/3886', 'ny-observed-winter-temperature', '2a'),
+            ('/metadata/figures/3886', 'ny-observed-winter-temperature', '2a-1'),
+            ('/metadata/figures/3885', 'ny-observed-summer-temperature', '2a-2'),
             ('/metadata/figures/3883', 'ny-observed-number-of-very-hot-days', '2b'),
             ('/metadata/figures/3884', 'ny-observed-number-of-warm-nights', '2c'),
             ('/metadata/figures/3880', 'ny-observed-annual-precipitation', '2d'),
             ('/metadata/figures/3882', 'ny-observed-number-of-very-cold-nights', '3'),
+            ('', 'annual-maximum-ice-cover-for-lake-erie-and-lake-ontario', '4'),
             ('/metadata/figures/3881', 'ny-observed-number-of-extreme-precipitation-events', '5'),
             ('/metadata/figures/3889', 'ny-past-and-projected-changes-in-global-sea-level', '6'),
+            ('', 'observed-and-projected-annual-number-of-tidal-floods-for-battery-park-ny', '7'),
             ('/metadata/figures/3887', 'ny-projected-change-in-winter-precipitation', '8')
         ]),
         ('north-carolina', [
             ('/metadata/figures/3752', 'nc-observed-and-projected-temperature-change', '1'),
-            ('/metadata/figures/3753', 'nc-observed-summer-temperature', '2'),
-            ('/metadata/figures/3754', 'nc-observed-winter-temperature', '2'),
+            ('/metadata/figures/3754', 'nc-observed-winter-temperature', '2a'),
+            ('/metadata/figures/3753', 'nc-observed-summer-temperature', '2b'),
+            ('/metadata/figures/3750', 'nc-observed-number-of-very-hot-days', '3a'),
             ('/metadata/figures/3748', 'nc-observed-annual-precipitation', '3b'),
-            ('/metadata/figures/3749', 'nc-observed-number-of-extreme-precipitation-events', '3d'),
-            ('/metadata/figures/3750', 'nc-observed-number-of-very-hot-days', '4'),
+            ('/metadata/figures/3749', 'nc-observed-number-of-extreme-precipitation-events', '3c'),
+            ('', 'total-hurricane-events-in-nc', '4'),
             ('/metadata/figures/3751', 'nc-observed-number-of-very-warm-nights', '4'),
-            ('/metadata/figures/3826', 'nc-past-and-projected-changes-in-global-sea-level', '6')
+            ('', 'nc-projected-change-in-annual-precipitation', '5'),
+            ('/metadata/figures/3826', 'nc-past-and-projected-changes-in-global-sea-level', '6'),
+            ('', 'observed-and-projected-annual-number-of-tidal-floods-for-wilmington-nc', '7')
         ]),
         ('north-dakota', [
             ('/metadata/figures/3652', 'nd-observed-and-projected-temperature-change', '1'),
@@ -366,6 +421,7 @@ sync_metadata_tree = {
             ('/metadata/figures/3655', 'nd-observed-number-of-very-cold-days', '4'),
             ('/metadata/figures/3653', 'nd-observed-annual-precipitation', '5'),
             ('/metadata/figures/3657', 'nd-observed-number-of-extreme-precipitation-events', '6'),
+            ('', 'devils-lake-water-levels', '7'),
             ('/metadata/figures/3658', 'nd-projected-change-in-winter-precipitation', '8')
         ]),
         ('ohio', [
@@ -373,8 +429,8 @@ sync_metadata_tree = {
             ('/metadata/figures/3735', 'oh-observed-number-of-very-hot-days', '2a'),
             ('/metadata/figures/3734', 'oh-observed-number-of-very-cold-nights', '2b'),
             ('/metadata/figures/3732', 'oh-observed-annual-precipitation', '2c'),
-            ('/metadata/figures/3738', 'oh-observed-summer-precipitation', '2d'),
-            ('/metadata/figures/3739', 'oh-observed-winter-precipitation', '2d'),
+            ('/metadata/figures/3739', 'oh-observed-winter-precipitation', '2d-1'),
+            ('/metadata/figures/3738', 'oh-observed-summer-precipitation', '2d-2'),
             ('/metadata/figures/3736', 'oh-observed-number-of-warm-nights', '3'),
             ('/metadata/figures/3733', 'oh-observed-number-of-extreme-precipitation-events', '4'),
             ('/metadata/figures/3740', 'oh-projected-change-in-spring-precipitation', '5')
@@ -394,11 +450,12 @@ sync_metadata_tree = {
         ('oregon', [
             ('/metadata/figures/3746', 'or-observed-and-projected-temperature-change', '1'),
             ('/metadata/figures/3743', 'or-observed-number-of-extremely-hot-days', '2'),
-            ('/metadata/figures/3742', 'or-observed-number-of-days-below-freezing', '3'),
-            ('/metadata/figures/3741', 'or-observed-annual-precipitation', '3c'),
-            ('/metadata/figures/3745', 'or-observed-number-of-very-cold-nights', '4'),
+            ('/metadata/figures/3745', 'or-observed-number-of-very-cold-nights', '3'),
+            ('/metadata/figures/3742', 'or-observed-number-of-days-below-freezing', '4a'),
             ('/metadata/figures/3828', 'or-observed-number-of-warm-nights', '4b'),
+            ('/metadata/figures/3741', 'or-observed-annual-precipitation', '4c'),
             ('/metadata/figures/3744', 'or-observed-number-of-extreme-precipitation-events', '4d'),
+            ('', 'april-1-snow-water-equivalent-at-tangent', '5'),
             ('/metadata/figures/3837', 'end-of-season-snow-water-equivalent-depth-at-mt-hood', '5'),
             ('/metadata/figures/3747', 'or-projected-change-in-winter-precipitation', '6'),
             ('/metadata/figures/3838', 'or-past-and-projected-changes-in-global-sea-level', '7')
@@ -411,6 +468,7 @@ sync_metadata_tree = {
             ('/metadata/figures/3930', 'pa-observed-number-of-extreme-precipitation-events', '2d'),
             ('/metadata/figures/3933', 'pa-observed-number-of-warm-nights', '3'),
             ('/metadata/figures/3945', 'pa-past-and-projected-changes-in-global-sea-level', '4'),
+            ('', 'observed-and-projected-annual-number-of-tidal-floods-for-philadelphia-pa', '5'),
             ('/metadata/figures/3935', 'pa-projected-change-in-winter-precipitation', '6')
         ]),
         ('rhode-island', [
@@ -421,28 +479,32 @@ sync_metadata_tree = {
             ('/metadata/figures/4079', 'ri-observed-annual-precipitation', '3c'),
             ('/metadata/figures/4080', 'ri-observed-summer-precipitation', '3d'),
             ('/metadata/figures/4074', 'ri-observed-number-of-very-cold-nights', '4'),
+            ('', 'ri-projected-change-in-annual-precipitation', '5'),
+            ('', 'observed-and-projected-annual-number-of-tidal-floods-providence-ri', '6'),
             ('/metadata/figures/4076', 'ri-past-and-projected-changes-in-global-sea-level', '7')
         ]),
         ('south-carolina', [
             ('/metadata/figures/4027', 'sc-observed-and-projected-temperature-change', '1'),
             ('/metadata/figures/4032', 'sc-observed-number-of-extremely-hot-days', '2a'),
+            ('/metadata/figures/4031', 'sc-observed-number-of-days-below-freezing', '2b'),
             ('/metadata/figures/4030', 'sc-observed-annual-precipitation', '2c'),
             ('/metadata/figures/4033', 'sc-observed-number-of-extreme-precipitation-events', '2d'),
             ('/metadata/figures/4034', 'sc-observed-number-of-very-warm-nights', '3'),
             ('/metadata/figures/4037', 'sc-past-and-projected-changes-in-global-sea-level', '4'),
-            ('/metadata/figures/4031', 'sc-observed-number-of-days-below-freezing', '4a')
+            ('', 'sc-projected-change-in-annual-precipitation', '5'),
+            ('', 'observed-and-projected-annual-number-of-tidal-floods-charleston-sc', '6')
         ]),
         ('south-dakota', [
             ('/metadata/figures/4013', 'sd-observed-and-projected-temperature-change', '1'),
-            ('/metadata/figures/4022', 'sd-observed-summer-temperature', '2'),
-            ('/metadata/figures/4023', 'sd-observed-winter-temperature', '2'),
+            ('/metadata/figures/4023', 'sd-observed-winter-temperature', '2a'),
+            ('/metadata/figures/4022', 'sd-observed-summer-temperature', '2b'),
             ('/metadata/figures/4017', 'sd-observed-number-of-extremely-hot-days', '3a'),
             ('/metadata/figures/4020', 'sd-observed-number-or-warm-nights', '3b'),
             ('/metadata/figures/4016', 'sd-observed-annual-precipitation', '3c'),
             ('/metadata/figures/4021', 'sd-observed-summer-precipitation', '3d'),
             ('/metadata/figures/4019', 'sd-observed-number-of-very-cold-days', '4'),
-            ('/metadata/figures/4018', 'sd-observed-number-of-extreme-precipitation-events', '5'),
-            ('/metadata/figures/4015', 'sd-annual-snowfall-totals-at-menno', '6'),
+            ('/metadata/figures/4015', 'sd-annual-snowfall-totals-at-menno', '5'),
+            ('/metadata/figures/4018', 'sd-observed-number-of-extreme-precipitation-events', '6'),
             ('/metadata/figures/4014', 'sd-projected-change-in-winter-precipitation', '7')
         ]),
         ('tennessee', [
@@ -461,7 +523,11 @@ sync_metadata_tree = {
             ('/metadata/figures/4047', 'tx-observed-number-of-days-below-freezing', '4a'),
             ('/metadata/figures/4044', 'tx-observed-annual-precipitation', '4b'),
             ('/metadata/figures/4046', 'tx-observed-number-of-extreme-precipitation-events', '4c'),
-            ('/metadata/figures/4043', 'tx-texas-palmer-drought-severity-index', '6'),
+            ('', 'total-hurricane-events-in-texas', '4d'),
+            ('', 'total-rainfall-amounts-in-may-2015-texas', '5'),
+            ('/metadata/figures/4043', 'texas-palmer-drought-severity-index', '6'),
+            ('', 'storm-surge-heights-at-galveston-bay', '7'),
+            ('', 'tx-change-in-annual-precipitation', '8'),
             ('/metadata/figures/4042', 'tx-past-and-projected-changes-in-global-sea-level', '9')
         ]),
         ('utah', [
@@ -470,7 +536,7 @@ sync_metadata_tree = {
             ('/metadata/figures/3721', 'ut-observed-number-of-very-warm-nights', '3'),
             ('/metadata/figures/3720', 'ut-observed-number-of-very-cold-nights', '4a'),
             ('/metadata/figures/3717', 'ut-observed-annual-precipitation', '4b'),
-            ('/metadata/figures/3719', 'ut-observed-number-of-extreme-precipitation-events', '4d'),
+            ('/metadata/figures/3719', 'ut-observed-number-of-extreme-precipitation-events', '4c'),
             ('/metadata/figures/3908', 'ut-end-of-season-snow-water-equivalent-depth-at-ben-lomond-peak', '4d'),
             ('/metadata/figures/3909', 'utah-palmer-drought-severity-index', '5'),
             ('/metadata/figures/3927', 'ut-water-levels-in-the-great-salt-lake-at-saltair-boat-harbor', '6'),
@@ -480,12 +546,12 @@ sync_metadata_tree = {
             ('/metadata/figures/3629', 'vt-observed-and-projected-temperature-change', '1'),
             ('/metadata/figures/3632', 'vt-observed-number-of-hot-days', '2a'),
             ('/metadata/figures/3634', 'vt-observed-number-of-very-cold-nights', '2b'),
-            ('/metadata/figures/3630', 'vt-observed-summer-temperature', '2c'),
-            ('/metadata/figures/3631', 'vt-observed-winter-temperature', '2c'),
+            ('/metadata/figures/3630', 'vt-observed-summer-temperature', '2c-a'),
+            ('/metadata/figures/3631', 'vt-observed-winter-temperature', '2c-b'),
             ('/metadata/figures/3635', 'vt-observed-number-of-extreme-precipitation-events', '2d'),
             ('/metadata/figures/3633', 'vt-observed-number-of-warm-nights', '3'),
-            ('/metadata/figures/3636', 'vt-observed-annual-precipitation', '5'),
-            ('/metadata/figures/3637', 'vt-projected-change-in-winter-precipitation', '6')
+            ('/metadata/figures/3636', 'vt-observed-annual-precipitation', '4'),
+            ('/metadata/figures/3637', 'vt-projected-change-in-winter-precipitation', '5')
         ]),
         ('virginia', [
             ('/metadata/figures/3980', 'va-observed-and-projected-temperature-change', '1'),
@@ -496,18 +562,20 @@ sync_metadata_tree = {
             ('/metadata/figures/3984', 'va-observed-number-of-very-cold-nights', '3'),
             ('/metadata/figures/3988', 'va-observed-summer-temperature', '4'),
             ('/metadata/figures/3983', 'va-observed-number-of-extreme-precipitation-events', '5'),
+            ('', 'va-projected-change-in-annual-precipitation', '6'),
             ('/metadata/figures/3989', 'va-past-and-projected-changes-in-global-sea-level', '7')
         ]),
         ('washington', [
-            ('/metadata/figures/3917', 'end-of-season-water-equivalent-depth-at-paradise', 'None'),
+            # ('/metadata/figures/3917', 'end-of-season-water-equivalent-depth-at-paradise', 'None'),
             ('/metadata/figures/4025', 'wa-observed-and-projected-temperature-change', '1'),
-            ('/metadata/figures/3914', 'wa-observed-number-of-very-hot-days', '2'),
-            ('/metadata/figures/3913', 'wa-observed-number-of-very-cold-nights', '3'),
-            ('/metadata/figures/3912', 'wa-observed-number-of-nights-below-freezing', '4a'),
-            ('/metadata/figures/3915', 'wa-observed-number-of-warm-nights', '4b'),
-            ('/metadata/figures/3910', 'wa-observed-annual-precipitation', '4c'),
-            ('/metadata/figures/3911', 'wa-observed-number-of-extreme-precipitation-events', '4d'),
+            ('', 'wa-observed-number-of-very-hot-days', '2'), #Deprecated
+            ('', 'wa-observed-number-of-very-cold-nights', '3'), #Deprecated
+            ('', 'wa-observed-number-of-nights-below-freezing', '4a'), #Deprecated
+            ('', 'wa-observed-number-of-warm-nights', '4b'), #Deprecated
+            ('/metadata/figures/3910', 'wa-observed-annual-precipitation', '2c'),
+            ('', 'wa-observed-number-of-extreme-precipitation-events', '4d'), #Deprecated
             ('/metadata/figures/4026', 'wa-past-and-projected-changes-in-global-sea-level', '5'),
+            ('', 'observed-and-projected-annual-number-of-tidal-floods-for-seattle-wa', '6'),
             ('/metadata/figures/3916', 'wa-projected-change-in-winter-precipitation', '7')
         ]),
         ('west-virginia', [
@@ -516,16 +584,17 @@ sync_metadata_tree = {
             ('/metadata/figures/3997', 'wv-observed-number-of-warm-nights', '3'),
             ('/metadata/figures/3995', 'wv-observed-number-of-very-cold-nights', '4'),
             ('/metadata/figures/3993', 'wv-observed-annual-precipitation', '5'),
-            ('/metadata/figures/3994', 'wv-observed-number-of-extreme-precipitation-events', '6')
+            ('/metadata/figures/3994', 'wv-observed-number-of-extreme-precipitation-events', '6'),
+            ('', 'wv-projected-change-in-annual-precipitation', '7')
         ]),
         ('wisconsin', [
             ('/metadata/figures/3998', 'wi-observed-and-projected-temperature-change', '1'),
-            ('/metadata/figures/4007', 'wi-observed-summer-temperature', '2a'),
-            ('/metadata/figures/4009', 'wi-observed-winter-temperature', '2a'),
+            ('/metadata/figures/4009', 'wi-observed-winter-temperature', '2a-1'),
+            ('/metadata/figures/4007', 'wi-observed-summer-temperature', '2a-2'),
             ('/metadata/figures/4004', 'wi-observed-number-of-very-hot-days', '2b'),
             ('/metadata/figures/4005', 'wi-observed-number-of-warm-nights', '2c'),
-            ('/metadata/figures/4006', 'wi-observed-summer-precipitation', '2d'),
-            ('/metadata/figures/4008', 'wi-observed-winter-precipitation', '2d'),
+            ('/metadata/figures/4008', 'wi-observed-winter-precipitation', '2d-1'),
+            ('/metadata/figures/4006', 'wi-observed-summer-precipitation', '2d-2'),
             ('/metadata/figures/4003', 'wi-observed-number-of-very-cold-days', '3'),
             ('/metadata/figures/4000', 'wi-ice-cover-on-lake-mendota', '4'),
             ('/metadata/figures/4001', 'wi-observed-annual-precipitation', '5'),
@@ -537,9 +606,9 @@ sync_metadata_tree = {
             ('/metadata/figures/3957', 'wy-observed-and-projected-temperature-change', '1'),
             ('/metadata/figures/3939', 'wy-observed-number-of-very-hot-days', '2'),
             ('/metadata/figures/3940', 'wy-observed-number-of-warm-nights', '3'),
-            ('/metadata/figures/3938', 'wy-observed-number-of-very-cold-days', '3'),
-            ('/metadata/figures/3941', 'wy-observed-summer-temperature', '4a'),
-            ('/metadata/figures/3942', 'wy-observed-winter-temperature', '4a'),
+            ('/metadata/figures/3942', 'wy-observed-winter-temperature', '4a-1'),
+            ('/metadata/figures/3941', 'wy-observed-summer-temperature', '4a-2'),
+            ('/metadata/figures/3938', 'wy-observed-number-of-very-cold-days', '4b'),
             ('/metadata/figures/3936', 'wy-observed-annual-precipitation', '4c'),
             ('/metadata/figures/3937', 'wy-observed-number-of-extreme-precipitation-events', '4d'),
             ('/metadata/figures/3926', 'end-of-season-snow-water-equivalent-depth-at-lewis-lake-divide', '5'),
