@@ -3,6 +3,8 @@ __author__ = 'abuddenberg'
 from os.path import exists
 import sys
 
+from domain import GcisObject
+
 def warning(*objs):
     print("WARNING: ", *objs, file=sys.stderr)
 
@@ -66,7 +68,12 @@ def realize_parents(gcis_client, parents):
         parent_matches = gcis_client.lookup_publication(parent.publication_type_identifier, parent.label)
 
         if len(parent_matches) == 1:
-            parent.url = '/{type}/{id}'.format(type=parent.publication_type_identifier, id=parent_matches[0][0])
+            matched_id, matched_name = parent_matches[0]
+            parent.url = '/{type}/{id}'.format(type=parent.publication_type_identifier, id=matched_id)
+            # Need the ability to dynamically identify and retrieve an instance of the parent publication.
+            # Here's a generic, for the time being.
+            parent.publication = GcisObject({'identifier': matched_id})
+
         elif len(parent_matches) == 0:
             warning(' '.join(('No ID found for', parent.publication_type_identifier, parent.label)))
         else:

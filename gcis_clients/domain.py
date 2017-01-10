@@ -13,6 +13,7 @@ class Gcisbase(object):
         #Setup class variables
         self.gcis_fields = fields
         self.translations = trans
+        self.identifier = None
 
         #Save off a copy of the original JSON for debugging
         self.original = deepcopy(data)
@@ -246,6 +247,7 @@ class Dataset(GcisObject):
         self._release_dt = None
         self._access_dt = None
         self._publication_year = None
+        self._temporal_extent = None
 
         super(Dataset, self).__init__(data, fields=self.gcis_fields, trans=trans)
 
@@ -306,7 +308,20 @@ class Dataset(GcisObject):
             self._publication_year = match.group()
         else:
             self._publication_year = None
-            
+
+    @property
+    def temporal_extent(self):
+        return self._temporal_extent
+
+    #Can't use property.setter due to multiple args
+    def set_temporal_extent(self, start_dt, end_dt):
+        try:
+            self._temporal_extent = '{0} {1}'.format(parse(start_dt).isoformat(), parse(end_dt).isoformat()) if start_dt and end_dt else None
+        except TypeError:
+            self._temporal_extent = None
+        except ValueError:
+            self._temporal_extent = None
+
             
 class Activity(GcisObject):
     def __init__(self, data, trans=()):

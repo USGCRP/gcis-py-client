@@ -297,3 +297,10 @@ class SurveyClient:
         else:
             raise Exception(resp.status_code)
 
+    def get_dataset(self, dataset_name):
+        url = '{b}/get-dataset'.format(b=self.base_url)
+        resp = requests.get(url, params={'uuid': dataset_name})
+
+        return resp
+
+

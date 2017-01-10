@@ -2,6 +2,19 @@ __author__ = 'abuddenberg'
 
 from gcis_clients.domain import Person
 
+DATASET_TRANSLATIONS = {
+    'dataset_name': 'name',
+    'dataset_id': 'native_id',
+    'dataset_citation': 'cite_metadata',
+    'dataset_description': 'description',
+    'dataset_year_published': 'publication_year',
+    # 'dataset_period_record': 'temporal_extent',
+    'dataset_version': 'version',
+    'dataset_access_date': 'access_dt',
+    'dataset_url': 'url',
+    'dataset_release_date': 'release_dt'
+}
+
 DATASET_IDS = {
     'U.S. Climate Divisional Dataset Version 2': 'nca3-cddv2-r1',
     'World Climate Research Program\'s (WCRP\'s) Coupled Model Intercomparison Project phase 5 (CMIP5) multi-model ensemble': 'nca3-cmip5-r1',
@@ -11,7 +24,10 @@ DATASET_IDS = {
     'Billion-Dollar Weather and Climate Disasters': 'noaa-ncdc-billion-dollar-weather-climate-disasters',
     'ESRI USA10 dataset (ArcGIS version 10.0)': 'esri-arcgis-v10-0',
     'nClimDiv': 'noaa-ncdc-cag-us-temperature-nclimdiv',
-    'Global Historical Climatology Network (GHCN) Daily': 'noaa-ncdc-ghcn-daily'
+    'Global Historical Climatology Network (GHCN) Daily': 'noaa-ncdc-ghcn-daily',
+    'Continential United States Hurricane Impacts/ Landfalls 1851-2015': 'noaa-aoml-hurdat'
+    # 'Time Bias Corrected Divisional Temperature Precipitation Drought Index': 'noaa-ncei-time-bias-corrected-divisional-temperature-precipitation-drought-index',
+    # 'North American Drought Atlas': 'noaa-ncei-north-american-drought-atlas'
 }
 
 COPYRIGHT_TRANSLATIONS = {
@@ -51,7 +67,8 @@ PARENT_SEARCH_HINTS = {
         'Third National Climate Assessment': 'nca3',
         'A conceptual framework for action on the social determinants of health': 'conceptual-framework-for-action-on-the-social-determinants-of-health',
         'Regional Surface Climate Conditions in CMIP3 and CMIP5 for the United States: Differences, Similarities, and Implications for the U.S. National Climate Assessment.': 'noaa-techreport-nesdis-144',
-        '2012 Census of Agriculture': 'census-agriculture-2012'
+        '2012 Census of Agriculture': 'census-agriculture-2012',
+        'Regional Climate Trends and Scenarios for the U.S. National Climate Assessment. Part 3. Climate of the Midwest U.S.,': 'noaa-techreport-nesdis-142-3'
     },
     'dataset': {
         'Global Historical Climatology Network - Daily': 'noaa-ncdc-ghcn-daily'
