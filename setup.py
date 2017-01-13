@@ -19,16 +19,16 @@ class PyTest(TestCommand):
 
 setup(
     name='GcisPyClient',
-    version='1.1.2',
+    version='1.2.0',
     author='Andrew Buddenberg',
     author_email='andrew.buddenberg@noaa.gov',
     packages=find_packages(),
-    scripts=['bin/example', 'bin/sync_surveys.py'],
+    scripts=['bin/example', 'bin/sync_surveys.py', 'bin/sync_states.py'],
     url='http://data.globalchange.gov',
     description='Client for GCIS webservices',
     long_description=open('README.md').read(),
     license='New BSD',
-    data_files = [("", ["LICENSE.txt", "README.md"])],
+    data_files=[("", ["LICENSE.txt", "README.md"])],
     install_requires=[
         "requests >= 2.1.0",
         "python-dateutil >= 2.2",

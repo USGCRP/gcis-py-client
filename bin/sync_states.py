@@ -6,7 +6,7 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 from gcis_clients import GcisClient, SurveyClient, survey_token, gcis_dev_auth, gcis_stage_auth
-from gcis_clients.domain import Report, Chapter
+from domain import Report, Chapter
 from sync_utils import realize_parents, realize_contributors
 from states import sync_metadata_tree
 

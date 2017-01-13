@@ -117,3 +117,12 @@ update will cause "Parent dissociation failed" messages to appear--these can be 
 Remove a parent from a figure
 
     gcis.delete_figure_parent_assoc('nca3', 'ten-indicators-of-a-warming-world', Parent.from_obj(cmip3))
+
+Building a source distribution
+------------------------------
+
+    $ python setup.py sdist
+    
+This builds a .tar.gz file of this package.
+
+    
