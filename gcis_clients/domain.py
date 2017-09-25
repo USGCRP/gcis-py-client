@@ -4,6 +4,7 @@ from copy import deepcopy
 import json
 import re
 import inspect
+import traceback
 
 from dateutil.parser import parse
 
@@ -313,7 +314,14 @@ class Dataset(GcisObject):
     def temporal_extent(self):
         return self._temporal_extent
 
-    #Can't use property.setter due to multiple args
+    @temporal_extent.setter
+    def temporal_extent(self, value):
+        try:
+            self.set_temporal_extent(*value.split())
+        except AttributeError:
+            print('Unable to ')
+
+    #Can't use property.setter directly to multiple args
     def set_temporal_extent(self, start_dt, end_dt):
         try:
             self._temporal_extent = '{0} {1}'.format(parse(start_dt).isoformat(), parse(end_dt).isoformat()) if start_dt and end_dt else None

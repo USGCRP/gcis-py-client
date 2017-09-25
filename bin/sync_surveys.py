@@ -2,15 +2,15 @@ __author__ = 'abuddenberg'
 
 from gcis_clients import GcisClient, SurveyClient, survey_token, gcis_dev_auth, gcis_stage_auth
 from gcis_clients.domain import Report, Chapter
-from sync_utils import realize_parents, realize_contributors
+# from sync_utils import realize_parents, realize_contributors
 
 from collections import OrderedDict
 
 import pickle
 import sys
 
-gcis = GcisClient('http://data.gcis-dev-front.joss.ucar.edu', *gcis_dev_auth)
-# gcis = GcisClient('https://data-stage.globalchange.gov', *gcis_stage_auth)
+# gcis = GcisClient('http://data.gcis-dev-front.joss.ucar.edu', *gcis_dev_auth)
+gcis = GcisClient('https://data-stage.globalchange.gov', *gcis_stage_auth)
 
 surveys = SurveyClient('https://healthresources.cicsnc.org', survey_token)
 
@@ -30,7 +30,6 @@ sync_metadata_tree = {
             ('/metadata/figures/3837', 'es-farm-to-table'),
             ('/metadata/figures/3839', 'es-the-impact-of-climate-change-on-physical-mental-and-community-health'),
             ('/metadata/figures/3840', 'es-determinants-of-vulnerability')
-
         ]),
         ('climate-change-and-human-health', [
             ('/metadata/figures/3698', 'major-us-climate-trends'), #1.1 #climate-change-and-human-health
@@ -115,57 +114,61 @@ def main():
     for report_id in sync_metadata_tree:
         for chapter_id in sync_metadata_tree[report_id]:
             for survey_url, figure_id in sync_metadata_tree[report_id][chapter_id]:
-                gcis_fig = gcis.get_figure(report_id, figure_id, chapter_id=chapter_id)
-
-                print survey_url, gen_edit_link(survey_url)
-
                 figure, datasets = surveys.get_survey(survey_url, do_download=False)
 
-                #Override identifier
-                figure.identifier = figure_id
-
-                #Pull existing captions
-                if gcis.figure_exists(report_id, figure_id, chapter_id=chapter_id):
-                    gcis_fig = gcis.get_figure(report_id, figure_id, chapter_id=chapter_id)
-                    figure.caption = gcis_fig.caption
-                    figure.files = gcis_fig.files
-
-                realize_parents(gcis, figure.parents)
-                realize_contributors(gcis, figure.contributors)
-
-                print 'Contributors: ', figure.contributors
-                print 'Parents: ', figure.parents
-
-                for ds in [p for p in figure.parents if p.publication_type_identifier == 'dataset']:
-                    # Assign synthetic activity identifier to for datasets associated with figure
-                    if ds.activity and ds.activity.identifier is None:
-                        ds.activity.identifier = generate_activity_id(figure, ds.publication)
-                    print 'Dataset: ', ds.activity
-
-                #Create the figure in GCIS
-                # print 'Creating figure... ', gcis.create_figure(report_id, chapter_id, figure, skip_images=True, skip_upload=False)
-                print 'Updating figure... ', gcis.update_figure(report_id, chapter_id, figure, skip_images=True)
-                # print 'Deleting old file', gcis.delete_file(figure.files[0])
-                # print 'Uploading...', gcis.upload_figure_file(report_id, chapter_id, figure_id, figure.local_path)
-
-                for i in figure.images:
-                    i.identifier = image_id_map[(figure_id, i.identifier)]
-                    print '\t', i
-
-                    realize_parents(gcis, i.parents)
-                    realize_contributors(gcis, i.contributors)
-
-                    print '\t\tContributors: ', i.contributors
-                    print '\t\tParents: ', i.parents
-                    for ds in [p for p in i.parents if p.publication_type_identifier == 'dataset']:
-                        # Assign synthetic activity identifier to for datasets associated with images
-                        if ds.activity and ds.activity.identifier is None:
-                            ds.activity.identifier = generate_activity_id(i, ds.publication)
-                        print '\t\tDataset: ', ds, ds.activity
-
-                    #Create image in GCIS
-                    # print 'Creating image... ', gcis.create_image(i, report_id=report_id, figure_id=figure_id)
-                    print 'Updating image... ', gcis.update_image(i)
+                resp = gcis.post_figure_original(report_id, figure_id, figure.original, chapter_id=chapter_id)
+                print(resp.status_code, resp.text)
+                # gcis_fig = gcis.get_figure(report_id, figure_id, chapter_id=chapter_id)
+                #
+                # print survey_url, gen_edit_link(survey_url)
+                #
+                # figure, datasets = surveys.get_survey(survey_url, do_download=False)
+                #
+                # #Override identifier
+                # figure.identifier = figure_id
+                #
+                # #Pull existing captions
+                # if gcis.figure_exists(report_id, figure_id, chapter_id=chapter_id):
+                #     gcis_fig = gcis.get_figure(report_id, figure_id, chapter_id=chapter_id)
+                #     figure.caption = gcis_fig.caption
+                #     figure.files = gcis_fig.files
+                #
+                # realize_parents(gcis, figure.parents)
+                # realize_contributors(gcis, figure.contributors)
+                #
+                # print 'Contributors: ', figure.contributors
+                # print 'Parents: ', figure.parents
+                #
+                # for ds in [p for p in figure.parents if p.publication_type_identifier == 'dataset']:
+                #     # Assign synthetic activity identifier to for datasets associated with figure
+                #     if ds.activity and ds.activity.identifier is None:
+                #         ds.activity.identifier = generate_activity_id(figure, ds.publication)
+                #     print 'Dataset: ', ds.activity
+                #
+                # #Create the figure in GCIS
+                # # print 'Creating figure... ', gcis.create_figure(report_id, chapter_id, figure, skip_images=True, skip_upload=False)
+                # print 'Updating figure... ', gcis.update_figure(report_id, chapter_id, figure, skip_images=True)
+                # # print 'Deleting old file', gcis.delete_file(figure.files[0])
+                # # print 'Uploading...', gcis.upload_figure_file(report_id, chapter_id, figure_id, figure.local_path)
+                #
+                # for i in figure.images:
+                #     i.identifier = image_id_map[(figure_id, i.identifier)]
+                #     print '\t', i
+                #
+                #     realize_parents(gcis, i.parents)
+                #     realize_contributors(gcis, i.contributors)
+                #
+                #     print '\t\tContributors: ', i.contributors
+                #     print '\t\tParents: ', i.parents
+                #     for ds in [p for p in i.parents if p.publication_type_identifier == 'dataset']:
+                #         # Assign synthetic activity identifier to for datasets associated with images
+                #         if ds.activity and ds.activity.identifier is None:
+                #             ds.activity.identifier = generate_activity_id(i, ds.publication)
+                #         print '\t\tDataset: ', ds, ds.activity
+                #
+                #     #Create image in GCIS
+                #     # print 'Creating image... ', gcis.create_image(i, report_id=report_id, figure_id=figure_id)
+                #     print 'Updating image... ', gcis.update_image(i)
 
 
 

@@ -197,7 +197,8 @@ class SurveyClient:
 
     def get_survey(self, fig_url, do_download=False):
         full_url = '{b}{url}?token={t}'.format(b=self.base_url, url=fig_url, t=self.token)
-        survey_json = requests.get(full_url).json()
+        resp = requests.get(full_url)
+        survey_json = resp.json()
         tier1_json = survey_json[0]['t1'] if len(survey_json) > 0 and survey_json[0]['t1'] is not None else []
         tier2_json = survey_json[0]['t2'] if len(survey_json) > 0 and survey_json[0]['t2'] is not None else []
 
@@ -208,6 +209,7 @@ class SurveyClient:
             figure_json = tier1_json['figure']
             #It's not worth trying to translations on this data; it's too different
             f = populate_figure(figure_json)
+            f.original = survey_json
             f.remote_path = survey_json[0]['filepath'].replace('sites/default/', 'system/')
             f.local_path = join(self.local_download_dir, basename(f.remote_path)) if f.remote_path else None
 

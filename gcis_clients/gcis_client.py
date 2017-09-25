@@ -285,6 +285,29 @@ class GcisClient(object):
         )
         return self.s.head(url, verify=False)
 
+    def get_figure_original(self, report_id, figure_id, chapter_id=None):
+        chapter_filter = '/chapter/' + chapter_id if chapter_id else ''
+
+        url = '{b}/report/{rpt}{chap}/figure/{fig}/original.json'.format(
+            b=self.base_url, rpt=report_id, chap=chapter_filter, fig=figure_id
+        )
+        resp = self.s.get(url, params={'all': '1'}, verify=False)
+
+        try:
+            return resp.json()
+        except ValueError:
+            raise Exception(resp.text)
+
+    @http_resp
+    def post_figure_original(self, report_id, figure_id, original_json, chapter_id=None):
+        chapter_filter = '/chapter/' + chapter_id if chapter_id else ''
+
+        url = '{b}/report/{rpt}{chap}/figure/{fig}/original.json'.format(
+            b=self.base_url, rpt=report_id, chap=chapter_filter, fig=figure_id
+        )
+
+        return self.s.post(url, json=original_json, verify=False)
+
     def get_image(self, image_id):
         url = '{b}/image/{img}'.format(b=self.base_url, img=image_id)
         resp = self.s.get(url, verify=False)
